@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Drama Studio">
+<meta name="theme-color" content="#0f0f14">
+<title>Short Drama Studio</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>🎬 Short Drama Studio</h1>
+  <nav>
+    <button data-tab="create" class="active">Create</button>
+    <button data-tab="cast">Cast</button>
+    <button data-tab="places">Places</button>
+    <button data-tab="episodes">Episodes</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+<!-- CREATE -->
+<section id="tab-create" class="tab active">
+  <div class="card">
+    <h2>New episode</h2>
+    <label>Series</label>
+    <select id="series-select"></select>
+    <button class="ghost small" id="new-series-btn">+ New series</button>
+    <label>Story idea (leave empty to let AI continue the series)</label>
+    <textarea id="idea" rows="3" placeholder="e.g. The maid discovers the CEO is her long-lost brother"></textarea>
+    <div class="row">
+      <div><label>Genre</label>
+        <select id="genre">
+          <option>Romance</option><option>Revenge</option><option>Family drama</option><option>Billionaire</option>
+          <option>Thriller</option><option>Comedy</option><option>Horror</option><option>Nollywood-style drama</option>
+        </select></div>
+      <div><label>Length</label>
+        <select id="length"><option value="30">30 sec</option><option value="45">45 sec</option><option value="60" selected>1 minute</option></select></div>
+    </div>
+    <label>Language</label>
+    <select id="lang"><option>English</option><option>Nigerian Pidgin</option><option>Yoruba</option><option>Igbo</option><option>Hausa</option><option>French</option><option>Spanish</option></select>
+    <label class="check"><input type="checkbox" id="use-narrator" checked> Include a narrator</label>
+    <p class="hint">Only the characters in this series' Cast and Places are used, so faces and voices stay the same in every episode.</p>
+    <button class="primary" id="write-btn">✍️ Write script</button>
+  </div>
+
+  <div class="card hidden" id="script-card">
+    <h2 id="ep-title"></h2>
+    <div id="script-view"></div>
+    <div class="row">
+      <button class="ghost" id="rewrite-btn">↻ Rewrite</button>
+      <button class="primary" id="make-btn">🎙️ Make video</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="progress-card">
+    <h2>Making your video</h2>
+    <div class="bar"><div id="bar-fill"></div></div>
+    <p id="progress-text"></p>
+    <canvas id="stage" width="720" height="1280"></canvas>
+  </div>
+
+  <div class="card hidden" id="result-card">
+    <h2>Ready to post</h2>
+    <video id="result-video" controls playsinline></video>
+    <div class="row">
+      <button class="primary" id="save-btn">⬇️ Save / Share</button>
+      <button class="ghost" id="copy-caption-btn">📋 Copy caption</button>
+    </div>
+    <pre id="caption-text"></pre>
+  </div>
+</section>
+
+<!-- CAST -->
+<section id="tab-cast" class="tab">
+  <div class="card">
+    <h2>Cast</h2>
+    <p class="hint">Each character's look and voice are locked once saved. Every episode reuses the same picture and voice.</p>
+    <div id="cast-list" class="grid"></div>
+    <button class="primary" id="add-char-btn">+ Add character</button>
+  </div>
+</section>
+
+<!-- PLACES -->
+<section id="tab-places" class="tab">
+  <div class="card">
+    <h2>Places</h2>
+    <p class="hint">Backgrounds the story can use: a mansion, an office, a village, a hospital.</p>
+    <div id="place-list" class="grid"></div>
+    <button class="primary" id="add-place-btn">+ Add place</button>
+  </div>
+</section>
+
+<!-- EPISODES -->
+<section id="tab-episodes" class="tab">
+  <div class="card">
+    <h2>Episodes</h2>
+    <div id="episode-list"></div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="tab-settings" class="tab">
+  <div class="card">
+    <h2>Settings</h2>
+    <label>Gemini API key (stays on this phone)</label>
+    <input id="set-key" type="password" placeholder="AIza...">
+    <label>Art style for all pictures</label>
+    <input id="set-style" placeholder="cinematic photo, dramatic lighting">
+    <label>Picture maker</label>
+    <select id="set-imgsrc">
+      <option value="horde">AI Horde (free, 1–3 min per picture)</option>
+      <option value="pollinations">Pollinations (needs a free key)</option>
+      <option value="upload">I'll upload my own pictures</option>
+    </select>
+    <label>Pollinations key (optional)</label>
+    <input id="set-pkey" type="password" placeholder="pk_...">
+    <label>Script model</label>
+    <input id="set-tmodel">
+    <label>Voice model</label>
+    <input id="set-vmodel">
+    <label>Narrator voice</label>
+    <select id="set-nvoice" class="voice-select"></select>
+    <button class="primary" id="save-settings">Save settings</button>
+    <p class="hint">Get a free Gemini key at aistudio.google.com/apikey. The free tier has a daily limit on voices; if you hit it, wait until tomorrow or the app retries slowly.</p>
+  </div>
+</section>
+</main>
+
+<!-- Character / place editor -->
+<dialog id="editor">
+  <form method="dialog" id="editor-form">
+    <h2 id="editor-title"></h2>
+    <label>Name</label>
+    <input id="ed-name" required>
+    <label id="ed-desc-label">Look (age, skin, hair, clothes — be specific)</label>
+    <textarea id="ed-desc" rows="3"></textarea>
+    <div id="ed-voice-wrap">
+      <label>Voice</label>
+      <div class="row"><select id="ed-voice" class="voice-select"></select><button type="button" class="ghost small" id="ed-test-voice">▶︎ Test</button></div>
+      <label>Personality / role</label>
+      <input id="ed-role" placeholder="cold CEO, secretly kind">
+    </div>
+    <div class="preview-wrap"><img id="ed-img" alt=""></div>
+    <div class="row">
+      <button type="button" class="ghost" id="ed-gen">🎨 Draw picture</button>
+      <label class="ghost upload">📷 Upload<input type="file" accept="image/*" id="ed-file" hidden></label>
+    </div>
+    <p class="hint" id="ed-status"></p>
+    <div class="row">
+      <button type="button" class="danger small" id="ed-delete">Delete</button>
+      <button type="button" class="ghost" id="ed-cancel">Cancel</button>
+      <button type="button" class="primary" id="ed-save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

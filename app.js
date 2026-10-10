@@ -29,6 +29,26 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('sds_settings') || '{}'));
+
+// In-page dialogs: native alert/confirm/prompt are silently blocked in some in-app browsers.
+function uiDialog(msg, { input = false, cancel = true } = {}) {
+  return new Promise(res => {
+    const o = document.createElement('div');
+    o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px';
+    o.innerHTML = `<div style="background:#1b1b24;border:1px solid #333;border-radius:16px;padding:20px;max-width:420px;width:100%;color:#fff;font:16px -apple-system,sans-serif">
+      <p style="margin:0 0 14px;white-space:pre-wrap"></p>${input ? '<input style="width:100%;margin-bottom:14px">' : ''}
+      <div style="display:flex;gap:10px;justify-content:flex-end">${cancel ? '<button class="ghost" data-x>Cancel</button>' : ''}<button class="primary" data-ok>OK</button></div></div>`;
+    o.querySelector('p').textContent = msg;
+    const inp = o.querySelector('input');
+    const done = v => { o.remove(); res(v); };
+    o.querySelector('[data-ok]').onclick = () => done(input ? inp.value.trim() : true);
+    const x = o.querySelector('[data-x]'); if (x) x.onclick = () => done(input ? '' : false);
+    document.body.appendChild(o); if (inp) inp.focus();
+  });
+}
+const uiAlert = m => uiDialog(m, { cancel: false });
+const uiConfirm = m => uiDialog(m);
+const uiPrompt = m => uiDialog(m, { input: true });
 const saveS = () => localStorage.setItem('sds_settings', JSON.stringify(S));
 
 /* ---------- IndexedDB ---------- */
@@ -213,7 +233,7 @@ async function renderSeries() {
 }
 $('#series-select').onchange = e => { S.seriesId = e.target.value; saveS(); };
 $('#new-series-btn').onclick = async () => {
-  const name = prompt('Series name?'); if (!name) return;
+  const name = await uiPrompt('Series name?'); if (!name) return;
   const s = { id: uid(), name, summary: '', episodes: 0 }; await put('series', s); S.seriesId = s.id; saveS(); renderSeries();
   toast('New series. Add its cast, or write an idea and tap Write script to get a suggested cast.');
 };
@@ -249,7 +269,7 @@ function addDrawAll(sel, items, kind) {
       try {
         x.img = await drawPicture(kind === 'char' ? charPrompt(x) : placePrompt(x), kind, x.seed, s => b.textContent = `${x.name} (${i + 1}/${missing.length}): ${s}`);
         await put(kind === 'char' ? 'chars' : 'places', x);
-      } catch (e) { alert(x.name + ': ' + e.message); break; }
+      } catch (e) { uiAlert(x.name + ': ' + e.message); break; }
     }
     kind === 'char' ? renderCast() : renderPlaces();
   };
@@ -273,18 +293,18 @@ $('#add-char-btn').onclick = () => openEditor('char');
 $('#add-place-btn').onclick = () => openEditor('place');
 $('#ed-cancel').onclick = () => $('#editor').close();
 $('#ed-save').onclick = async () => {
-  readEditor(); if (!edItem.name) return alert('Give it a name.');
+  readEditor(); if (!edItem.name) return uiAlert('Give it a name.');
   await put(edKind === 'char' ? 'chars' : 'places', edItem); $('#editor').close();
   edKind === 'char' ? renderCast() : renderPlaces();
 };
 $('#ed-delete').onclick = async () => {
-  if (!confirm('Delete ' + edItem.name + '?')) return;
+  if (!await uiConfirm('Delete ' + edItem.name + '?')) return;
   await del(edKind === 'char' ? 'chars' : 'places', edItem.id); $('#editor').close();
   edKind === 'char' ? renderCast() : renderPlaces();
 };
 $('#ed-file').onchange = async e => { const f = e.target.files[0]; if (!f) return; edItem.img = await shrink(await fileToDataURL(f)); $('#ed-img').src = edItem.img; };
 $('#ed-gen').onclick = async () => {
-  readEditor(); if (!edItem.desc) return alert('Describe it first.');
+  readEditor(); if (!edItem.desc) return uiAlert('Describe it first.');
   const b = $('#ed-gen'); b.disabled = true;
   try {
     edItem.img = await drawPicture(edKind === 'char' ? charPrompt(edItem) : placePrompt(edItem), edKind, edItem.seed, s => $('#ed-status').textContent = s);
@@ -319,7 +339,7 @@ async function writeScript() {
   const narr = $('#use-narrator').checked;
   let chars = await bySeries('chars'), places = await bySeries('places');
   if (!chars.length) {
-    if (!confirm('This series has no cast yet. Let the AI create the cast and places from your idea?')) return;
+    if (!await uiConfirm('This series has no cast yet. Let the AI create the cast and places from your idea?')) return;
     btnBusy('#write-btn', 'Creating cast…'); await suggestCast(idea, genre, lang);
     chars = await bySeries('chars'); places = await bySeries('places');
     toast('Cast created. Open Cast and Places to draw their pictures once.');
@@ -371,7 +391,7 @@ function showScript() {
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }
-$('#write-btn').onclick = async () => { try { await writeScript(); } catch (e) { logErr(e.message); alert(e.message); } btnDone('#write-btn'); };
+$('#write-btn').onclick = async () => { try { await writeScript(); } catch (e) { logErr(e.message); uiAlert(e.message); } btnDone('#write-btn'); };
 $('#rewrite-btn').onclick = $('#write-btn').onclick;
 
 /* ---------- voices for the episode ---------- */
@@ -599,7 +619,7 @@ $('#make-btn').onclick = async () => {
     showResult(blob, caption);
     renderSeries();
     progress(1, 'Done!');
-  } catch (e) { console.error(e); logErr(e.message); alert(e.message); progress(null, 'Stopped: ' + e.message); }
+  } catch (e) { console.error(e); logErr(e.message); uiAlert(e.message); progress(null, 'Stopped: ' + e.message); }
   btnDone('#make-btn');
 };
 function showResult(blob, caption) {
@@ -621,9 +641,9 @@ async function renderEpisodes() {
   const eps = (await all('episodes')).sort((a, b) => b.createdAt - a.createdAt), ss = await all('series');
   $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}</small></div>
     <button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
-  $$('[data-share]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.share); e.video ? shareBlob(e.video, e.name, e.title) : alert('Video not stored.'); });
+  $$('[data-share]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.share); e.video ? shareBlob(e.video, e.name, e.title) : uiAlert('Video not stored.'); });
   $$('[data-cap]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.cap); await navigator.clipboard.writeText(e.caption); toast('Caption copied'); });
-  $$('[data-del]').forEach(b => b.onclick = async () => { if (confirm('Delete this episode video?')) { await del('episodes', b.dataset.del); renderEpisodes(); } });
+  $$('[data-del]').forEach(b => b.onclick = async () => { if (await uiConfirm('Delete this episode video?')) { await del('episodes', b.dataset.del); renderEpisodes(); } });
 }
 
 /* ---------- start ---------- */

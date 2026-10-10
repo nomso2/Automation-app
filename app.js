@@ -18,7 +18,7 @@ const VOICES = [
 ];
 const DEFAULTS = {
   key: '', pkey: '', style: '3D animated movie still, Pixar-style 3D render, stylized characters with big expressive eyes, soft cinematic lighting, vibrant colors, highly detailed, octane render',
-  imgsrc: 'free', tmodel: 'gemini-2.5-flash', vmodel: 'gemini-2.5-flash-preview-tts',
+  imgsrc: 'horde', tmodel: 'gemini-3.8-flash', vmodel: 'gemini-3.8-flash-tts',
   nvoice: 'Charon', seriesId: ''
 };
 
@@ -29,7 +29,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('sds_settings') || '{}'));
-if (S.imgsrc === 'horde' && !S.hordeChosen) { S.imgsrc = 'free'; localStorage.setItem('sds_settings', JSON.stringify(S)); }
+if (S.imgsrc === 'free') S.imgsrc = 'horde';
+if (S.tmodel === 'gemini-2.5-flash') S.tmodel = DEFAULTS.tmodel;
+if (S.vmodel === 'gemini-2.5-flash-preview-tts') S.vmodel = DEFAULTS.vmodel;
+localStorage.setItem('sds_settings', JSON.stringify(S));
 if (/^cinematic photo, dramatic lighting/.test(S.style)) { S.style = DEFAULTS.style; localStorage.setItem('sds_settings', JSON.stringify(S)); }
 
 // In-page dialogs: native alert/confirm/prompt are silently blocked in some in-app browsers.
@@ -84,8 +87,8 @@ async function bySeries(st) { return (await all(st)).filter(x => x.seriesId === 
 
 /* ---------- Gemini ---------- */
 const FALLBACK = {
-  script: ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash-lite'],
-  voices: ['gemini-2.5-flash-preview-tts', 'gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts', 'gemini-3.1-flash-tts-preview']
+  script: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'],
+  voices: ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts', 'gemini-3.1-flash-tts-preview', 'gemini-2.5-flash-preview-tts']
 };
 async function gemini(model, body, label = 'request') {
   const tried = [model, ...(FALLBACK[label] || []).filter(m => m !== model)];

@@ -45,7 +45,7 @@ function uiDialog(msg, { input = false, cancel = true } = {}) {
     const done = v => { o.remove(); res(v); };
     o.querySelector('[data-ok]').onclick = () => done(input ? inp.value.trim() : true);
     const x = o.querySelector('[data-x]'); if (x) x.onclick = () => done(input ? '' : false);
-    document.body.appendChild(o); if (inp) inp.focus();
+    (document.querySelector('dialog[open]') || document.body).appendChild(o); if (inp) inp.focus();
   });
 }
 const uiAlert = m => uiDialog(m, { cancel: false });
@@ -297,7 +297,7 @@ function openEditor(kind, item) {
   $('#ed-desc-label').textContent = kind === 'char' ? 'Look (age, skin tone, hair, clothes — be specific, it never changes)' : 'What it looks like';
   $('#ed-voice-wrap').classList.toggle('hidden', kind !== 'char');
   $('#ed-name').value = edItem.name; $('#ed-desc').value = edItem.desc; $('#ed-role').value = edItem.role || '';
-  $('#ed-voice').value = edItem.voice || 'Kore'; $('#ed-img').src = edItem.img || ''; $('#ed-status').textContent = '';
+  $('#ed-voice').value = edItem.voice || 'Kore'; $('#ed-img').src = edItem.img || ''; $('#ed-status').textContent = ''; $('#ed-choices').innerHTML = ''; $('#ed-choices').classList.add('hidden');
   $('#ed-delete').classList.toggle('hidden', !item);
   $('#editor').showModal();
 }
@@ -319,11 +319,21 @@ $('#ed-file').onchange = async e => { const f = e.target.files[0]; if (!f) retur
 $('#ed-gen').onclick = async () => {
   readEditor(); if (!edItem.desc) return uiAlert('Describe it first.');
   const b = $('#ed-gen'); b.disabled = true;
-  try {
-    edItem.img = await drawPicture(edKind === 'char' ? charPrompt(edItem) : placePrompt(edItem), edKind, edItem.seed, s => $('#ed-status').textContent = s);
-    $('#ed-img').src = edItem.img; $('#ed-status').textContent = 'Done. Tap Save to lock it in. Not right? Draw again.';
-    edItem.seed = edItem.seed + 1; // next redraw gives a new variation; the saved picture itself is what stays constant
-  } catch (e) { $('#ed-status').textContent = e.message; }
+  const box = $('#ed-choices'); box.innerHTML = ''; box.classList.remove('hidden');
+  const prompt = edKind === 'char' ? charPrompt(edItem) : placePrompt(edItem);
+  const seeds = [edItem.seed || 1, (edItem.seed || 1) + 1000];
+  const st = ['…', '…'], show = () => $('#ed-status').textContent = `Drawing 2 options: ${st[0]} | ${st[1]}`;
+  const results = await Promise.allSettled(seeds.map((sd, i) => drawPicture(prompt, edKind, sd, s => { st[i] = s; show(); })));
+  const ok = results.map((r, i) => r.status === 'fulfilled' ? { img: r.value, seed: seeds[i] } : null).filter(Boolean);
+  if (!ok.length) { $('#ed-status').textContent = 'Could not draw: ' + results[0].reason?.message; box.classList.add('hidden'); b.disabled = false; return; }
+  box.innerHTML = ok.map((o, i) => `<img data-pick="${i}" src="${o.img}" style="width:48%;border-radius:12px;border:4px solid transparent;cursor:pointer">`).join('');
+  box.querySelectorAll('[data-pick]').forEach(im => im.onclick = () => {
+    const o = ok[+im.dataset.pick]; edItem.img = o.img; edItem.pickedSeed = o.seed; $('#ed-img').src = o.img;
+    box.querySelectorAll('img').forEach(x => x.style.borderColor = 'transparent'); im.style.borderColor = '#ff3b6b';
+    $('#ed-status').textContent = 'Picked. Tap Save to lock this look in.';
+  });
+  $('#ed-status').textContent = ok.length === 2 ? 'Tap the one you like, then Save. Neither? Draw again.' : 'Only one came back. Tap it to use it, or Draw again.';
+  edItem.seed = (edItem.seed || 1) + 1; // next draw gives new options
   b.disabled = false;
 };
 $('#ed-test-voice').onclick = async () => {

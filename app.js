@@ -61,7 +61,23 @@ const get = (st, id) => tx(st, 'readonly', s => s.get(id));
 async function bySeries(st) { return (await all(st)).filter(x => x.seriesId === S.seriesId); }
 
 /* ---------- Gemini ---------- */
+const FALLBACK = {
+  script: ['gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash-lite'],
+  voices: ['gemini-2.5-flash-preview-tts', 'gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts', 'gemini-3.1-flash-tts-preview']
+};
 async function gemini(model, body, label = 'request') {
+  const tried = [model, ...(FALLBACK[label] || []).filter(m => m !== model)];
+  let lastErr;
+  for (const m of tried) {
+    try { return await geminiOnce(m, body, label); }
+    catch (e) { lastErr = e; if (!/Gemini (404|400)|not found|not supported|limit reached/i.test(e.message)) throw e; logErr(`${m}: ${e.message} — trying next model`); }
+  }
+  throw lastErr;
+}
+function logErr(m) { const el = document.getElementById('err-log'); if (el) { el.classList.remove('hidden'); el.textContent += new Date().toLocaleTimeString() + '  ' + m + '\n'; } console.warn(m); }
+window.addEventListener('error', e => logErr('Error: ' + e.message));
+window.addEventListener('unhandledrejection', e => logErr('Error: ' + (e.reason?.message || e.reason)));
+async function geminiOnce(model, body, label) {
   if (!S.key) throw new Error('Add your Gemini API key in Settings first.');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(S.key)}`;
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -355,7 +371,7 @@ function showScript() {
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }
-$('#write-btn').onclick = async () => { try { await writeScript(); } catch (e) { alert(e.message); } btnDone('#write-btn'); };
+$('#write-btn').onclick = async () => { try { await writeScript(); } catch (e) { logErr(e.message); alert(e.message); } btnDone('#write-btn'); };
 $('#rewrite-btn').onclick = $('#write-btn').onclick;
 
 /* ---------- voices for the episode ---------- */
@@ -583,7 +599,7 @@ $('#make-btn').onclick = async () => {
     showResult(blob, caption);
     renderSeries();
     progress(1, 'Done!');
-  } catch (e) { console.error(e); alert(e.message); progress(null, 'Stopped: ' + e.message); }
+  } catch (e) { console.error(e); logErr(e.message); alert(e.message); progress(null, 'Stopped: ' + e.message); }
   btnDone('#make-btn');
 };
 function showResult(blob, caption) {

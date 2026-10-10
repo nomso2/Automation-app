@@ -17,7 +17,7 @@ const VOICES = [
   ['Achird','male, friendly'],['Zubenelgenubi','male, casual'],['Sadachbia','male, lively'],['Sadaltager','male, knowledgeable']
 ];
 const DEFAULTS = {
-  key: '', pkey: '', style: 'cinematic photo, dramatic lighting, shallow depth of field, 35mm film look',
+  key: '', pkey: '', style: '3D animated movie still, Pixar-style 3D render, stylized characters with big expressive eyes, soft cinematic lighting, vibrant colors, highly detailed, octane render',
   imgsrc: 'horde', tmodel: 'gemini-2.5-flash', vmodel: 'gemini-2.5-flash-preview-tts',
   nvoice: 'Charon', seriesId: ''
 };
@@ -29,6 +29,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('sds_settings') || '{}'));
+if (/^cinematic photo, dramatic lighting/.test(S.style)) { S.style = DEFAULTS.style; localStorage.setItem('sds_settings', JSON.stringify(S)); }
 
 // In-page dialogs: native alert/confirm/prompt are silently blocked in some in-app browsers.
 function uiDialog(msg, { input = false, cancel = true } = {}) {

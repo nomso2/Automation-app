@@ -18,7 +18,7 @@ const VOICES = [
 ];
 const DEFAULTS = {
   key: '', pkey: '', style: '3D animated movie still, Pixar-style 3D render, stylized characters with big expressive eyes, soft cinematic lighting, vibrant colors, highly detailed, octane render',
-  imgsrc: 'horde', tmodel: 'gemini-2.5-flash', vmodel: 'gemini-2.5-flash-preview-tts',
+  imgsrc: 'free', tmodel: 'gemini-2.5-flash', vmodel: 'gemini-2.5-flash-preview-tts',
   nvoice: 'Charon', seriesId: ''
 };
 
@@ -29,6 +29,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('sds_settings') || '{}'));
+if (S.imgsrc === 'horde' && !S.hordeChosen) { S.imgsrc = 'free'; localStorage.setItem('sds_settings', JSON.stringify(S)); }
 if (/^cinematic photo, dramatic lighting/.test(S.style)) { S.style = DEFAULTS.style; localStorage.setItem('sds_settings', JSON.stringify(S)); }
 
 // In-page dialogs: native alert/confirm/prompt are silently blocked in some in-app browsers.
@@ -168,6 +169,17 @@ async function shrink(dataURL, max = 1080) {
 async function drawPicture(prompt, kind, seed, onStatus) {
   const portrait = kind === 'char';
   if (S.imgsrc === 'upload') throw new Error('Picture maker is set to "upload". Tap Upload, or change it in Settings.');
+  if (S.imgsrc === 'free') {
+    try {
+      onStatus('Drawing…');
+      const w = portrait ? 768 : 720, h = portrait ? 1024 : 1280;
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.slice(0, 900))}?width=${w}&height=${h}&seed=${seed}&nologo=true&model=flux`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('free picture service ' + r.status);
+      const b = await r.blob(); if (!b.type.startsWith('image/')) throw new Error('free picture service sent no image');
+      return shrink(await fileToDataURL(b));
+    } catch (e) { logErr(e.message + ' — falling back to AI Horde'); }
+  }
   if (S.imgsrc === 'pollinations') {
     if (!S.pkey) throw new Error('Add your Pollinations key in Settings (free at enter.pollinations.ai).');
     onStatus('Drawing…');
@@ -217,7 +229,7 @@ function loadSettingsUI() {
 }
 $('#save-settings').onclick = () => {
   Object.assign(S, { key: $('#set-key').value.trim(), pkey: $('#set-pkey').value.trim(), style: $('#set-style').value.trim() || DEFAULTS.style,
-    imgsrc: $('#set-imgsrc').value, tmodel: $('#set-tmodel').value.trim() || DEFAULTS.tmodel, vmodel: $('#set-vmodel').value.trim() || DEFAULTS.vmodel,
+    imgsrc: $('#set-imgsrc').value, hordeChosen: $('#set-imgsrc').value === 'horde', tmodel: $('#set-tmodel').value.trim() || DEFAULTS.tmodel, vmodel: $('#set-vmodel').value.trim() || DEFAULTS.vmodel,
     nvoice: $('#set-nvoice').value });
   saveS(); toast('Settings saved');
 };
@@ -362,19 +374,20 @@ ${places.map(p => `- ${p.name}`).join('\n')}
 
 Rules:
 - Total spoken words about ${words} so it lasts about ${secs} seconds. 4 to 7 scenes.
+- Every scene needs physical action (a slap, a chase, a ring thrown, a door slammed, a phone dropped), not just talking.
 - Line one must be a shocking hook in the first 3 seconds. Fast, emotional, short lines.
 - ${narr ? 'Use "Narrator" sparingly for scene-setting.' : 'No narrator: only characters speak.'}
 - End on a cliffhanger that makes viewers want the next part.
 Return JSON only:
 {"title": string, "hook": "max 7 words for on-screen title", "summary": "2 sentences of what happened, for continuity",
  "caption": "TikTok caption, 1-2 sentences", "hashtags": [5-8 strings without #],
- "scenes": [{"place": exact place name, "on_screen": [1 or 2 exact character names visible], "lines": [{"speaker": exact character name${narr ? ' or "Narrator"' : ''}, "emotion": "one or two words", "text": string}]}]}`);
+ "scenes": [{"place": exact place name, "action": "one vivid visual sentence of what physically happens (who does what, pose, movement)", "on_screen": [1 or 2 exact character names visible], "lines": [{"speaker": exact character name${narr ? ' or "Narrator"' : ''}, "emotion": "one or two words", "text": string}]}]}`);
   if (!Array.isArray(j.scenes) || !j.scenes.length) throw new Error('The script came back empty. Tap Rewrite.');
   // validate names so nothing outside the locked cast appears
   const findC = n => chars.find(c => c.name.toLowerCase() === String(n || '').trim().toLowerCase()) || chars.find(c => String(n || '').toLowerCase().includes(c.name.toLowerCase().split(' ')[0]));
   const findP = n => places.find(p => p.name.toLowerCase() === String(n || '').trim().toLowerCase()) || places[0];
   j.scenes = j.scenes.map(sc => ({
-    placeId: findP(sc.place).id,
+    placeId: findP(sc.place).id, action: String(sc.action || '').trim(),
     onScreen: (sc.on_screen || []).map(findC).filter(Boolean).map(c => c.id).slice(0, 2),
     lines: (sc.lines || []).filter(l => l.text).map(l => { const c = /narrator/i.test(l.speaker) ? null : findC(l.speaker); return { charId: c ? c.id : null, emotion: l.emotion || '', text: String(l.text).trim() }; })
   })).filter(sc => sc.lines.length);
@@ -481,8 +494,16 @@ function drawFrame(g, t, R, imgs) {
   const si = Math.max(0, scenes.findIndex(s => t >= s.start && t < s.end)), sc = scenes[si] || scenes[scenes.length - 1];
   const local = (t - sc.start) / Math.max(0.1, sc.end - sc.start);
   // background with slow Ken Burns move
-  const bg = imgs[sc.placeId];
-  if (bg) { g.save(); g.filter = 'brightness(0.62)'; coverDraw(g, bg, 1.06 + 0.12 * local, si % 2 ? -0.6 + local : 0.6 - local, 0); g.restore(); }
+  const shot = imgs['shot' + si], bg = shot || imgs[sc.placeId];
+  const seg0 = segs.find(s => t >= s.start && t < s.end);
+  const sinceLine = seg0 ? t - seg0.start : 9, sinceCut = t - sc.start;
+  const punch = 0.10 * Math.exp(-sinceLine * 5);            // zoom punch on every new line
+  const angry = seg0 && (/angr|shout|scream|shock|rage|furious|slap|cry/i.test(seg0.emotion || '') || /!/.test(seg0.text));
+  const shake = angry && sinceLine < 0.7 ? (0.7 - sinceLine) * 14 : 0;
+  const moves = [[0.6, -0.6, 0, 0], [-0.6, 0.6, 0, 0], [0, 0, 0.5, -0.5], [0, 0, -0.5, 0.5]], mv = moves[si % 4];
+  if (bg) { g.save(); if (shake) g.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    if (!shot) g.filter = 'brightness(0.62)';
+    coverDraw(g, bg, 1.08 + 0.22 * local + punch, mv[0] + (mv[1] - mv[0]) * local, mv[2] + (mv[3] - mv[2]) * local); g.restore(); }
   else { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#2a1630'); gr.addColorStop(1, '#0a0a12'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
   // who is on screen: current speaker, else scene's on-screen cast
   const seg = segs.find(s => t >= s.start && t < s.end);
@@ -505,8 +526,13 @@ function drawFrame(g, t, R, imgs) {
     g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(c.name, w / 2, h + 10);
     g.restore();
   };
-  if (show.length === 1) portraitBox(show[0], 110, 250, 500, 640, !!(seg && seg.charId === show[0]));
+  if (shot) {
+    // action shot fills the screen; the speaker pops in as a small badge
+    if (seg && seg.charId) { const k = Math.min(1, sinceLine * 6); g.save(); g.globalAlpha = k; g.translate(-200 * (1 - k), 0); portraitBox(seg.charId, 30, 120, 200, 250, true); g.restore(); }
+  } else if (show.length === 1) portraitBox(show[0], 110, 250, 500, 640, !!(seg && seg.charId === show[0]));
   else if (show.length === 2) { portraitBox(show[0], 30, 300, 320, 440, seg?.charId === show[0]); portraitBox(show[1], 370, 300, 320, 440, seg?.charId === show[1]); }
+  // white flash on scene cut
+  if (si > 0 && sinceCut < 0.18) { g.fillStyle = `rgba(255,255,255,${0.7 * (1 - sinceCut / 0.18)})`; g.fillRect(0, 0, W, H); }
   // bottom gradient
   const gr = g.createLinearGradient(0, H * 0.6, 0, H); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.85)'); g.fillStyle = gr; g.fillRect(0, H * 0.6, W, H * 0.4);
   // captions
@@ -608,7 +634,26 @@ $('#make-btn').onclick = async () => {
     // re-read so pictures drawn after the script was written are used too
     current.chars = await Promise.all(current.chars.map(async c => (await get('chars', c.id)) || c));
     current.places = await Promise.all(current.places.map(async p => (await get('places', p.id)) || p));
+    if (S.imgsrc !== 'upload') {
+      const need = [...current.chars.map(x => ['char', x]), ...current.places.map(x => ['place', x])].filter(([, x]) => !x.img);
+      for (const [i, [kind, x]] of need.entries()) {
+        try {
+          x.img = await drawPicture(kind === 'char' ? charPrompt(x) : placePrompt(x), kind, x.seed || 1, st => progress(0.02 + 0.1 * i / need.length, `Drawing ${x.name}: ${st}`));
+          await put(kind === 'char' ? 'chars' : 'places', x);
+        } catch (e) { logErr(x.name + ': ' + e.message); }
+      }
+      const scs = current.script.scenes;
+      for (const [i, sc] of scs.entries()) {
+        if (sc.shot || !sc.action) continue;
+        const who = sc.onScreen.map(id => current.chars.find(c => c.id === id)).filter(Boolean);
+        const pl = current.places.find(p => p.id === sc.placeId);
+        const prompt = `${S.style}. ${sc.action}. Characters: ${who.map(c => c.name + ' (' + c.desc + ')').join('; ')}. Setting: ${pl ? (pl.desc || pl.name) : ''}. Dynamic action shot, motion, dramatic angle, vertical frame, cinematic`;
+        try { sc.shot = await drawPicture(prompt, 'scene', (who[0]?.seed || 7) + i, st => progress(0.12 + 0.13 * i / scs.length, `Drawing scene ${i + 1}/${scs.length}: ${st}`)); }
+        catch (e) { logErr('Scene ' + (i + 1) + ': ' + e.message); }
+      }
+    }
     for (const x of [...current.chars, ...current.places]) if (x.img) imgs[x.id] = await loadImg(x.img);
+    for (const [i, sc] of current.script.scenes.entries()) if (sc.shot) imgs['shot' + i] = await loadImg(sc.shot);
     const R = await voiceEpisode();
     progress(0.6, 'Recording video…');
     const blob = await renderVideo(R, imgs);

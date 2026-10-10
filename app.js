@@ -414,7 +414,8 @@ function showScript() {
   const { script, chars, places } = current;
   const cn = id => id ? (chars.find(c => c.id === id)?.name || '?') : 'Narrator';
   $('#ep-title').textContent = script.title;
-  $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map(sc => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div>${sc.lines.map(l => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: ${esc(l.text)}</p>`).join('')}</div>`).join('');
+  $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map((sc, si) => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div>${sc.lines.map((l, li) => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: <span class="line-text" contenteditable="true" data-s="${si}" data-l="${li}">${esc(l.text)}</span></p>`).join('')}</div>`).join('') + '<p class="hint">Tip: tap any line to change the words before making the video.</p>';
+  $$('.line-text').forEach(el => el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); });
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }
@@ -635,8 +636,10 @@ async function renderVideo(R, imgs) {
 
 /* ---------- make video ---------- */
 let lastBlob = null, lastName = 'drama.mp4';
-$('#make-btn').onclick = async () => {
-  if (!current) return;
+$('#make-btn').onclick = () => makeVideo();
+async function makeVideo() {
+  if (!current) return false;
+  let ok = false;
   audioCtx(); // unlock audio on this tap (iOS)
   $('#progress-card').classList.remove('hidden'); $('#result-card').classList.add('hidden');
   $('#progress-card').scrollIntoView({ behavior: 'smooth' });
@@ -675,11 +678,27 @@ $('#make-btn').onclick = async () => {
     const s = current.series; s.episodes = (s.episodes || 0) + 1; s.summary = current.script.summary; await put('series', s);
     const caption = `${current.script.caption || current.script.title}\n\n${(current.script.hashtags || []).map(h => '#' + String(h).replace(/^#/, '').replace(/\s+/g, '')).join(' ')} #shortdrama #fyp`;
     await put('episodes', { id: uid(), seriesId: s.id, number: s.episodes, title: current.script.title, summary: current.script.summary, caption, createdAt: Date.now(), video: blob, name: lastName });
-    showResult(blob, caption);
+    showResult(blob, caption); ok = true;
     renderSeries();
     progress(1, 'Done!');
-  } catch (e) { console.error(e); logErr(e.message); uiAlert(e.message); progress(null, 'Stopped: ' + e.message); }
+  } catch (e) { console.error(e); logErr(e.message); if (!batchRunning) uiAlert(e.message); progress(null, 'Stopped: ' + e.message); }
   btnDone('#make-btn');
+  return ok;
+}
+/* ---------- auto-make several episodes in a row ---------- */
+let batchRunning = false, batchStop = false;
+$('#batch-btn').onclick = async () => {
+  if (batchRunning) { batchStop = true; $('#batch-btn').textContent = 'Stopping after this episode…'; return; }
+  const n = +$('#batch-count').value; batchRunning = true; batchStop = false; audioCtx();
+  for (let i = 0; i < n && !batchStop; i++) {
+    $('#batch-btn').textContent = `⏹ Stop (episode ${i + 1} of ${n})`;
+    try { if (i > 0) $('#idea').value = ''; await writeScript(); } catch (e) { logErr('Script: ' + e.message); break; }
+    btnDone('#write-btn');
+    if (!await makeVideo()) break;
+    toast(`Episode ${i + 1} of ${n} saved to Episodes`);
+  }
+  batchRunning = false; $('#batch-btn').textContent = '⚡ Auto-make episodes';
+  toast('Batch finished. Find them in Episodes.');
 };
 function showResult(blob, caption) {
   $('#result-video').src = URL.createObjectURL(blob);
@@ -699,11 +718,31 @@ $('#copy-caption-btn').onclick = async () => { await navigator.clipboard.writeTe
 async function renderEpisodes() {
   const eps = (await all('episodes')).sort((a, b) => b.createdAt - a.createdAt), ss = await all('series');
   $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}</small></div>
-    <button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
+    <button class="ghost small" data-play="${e.id}">▶︎</button><button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
+  $$('[data-play]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.play); if (!e.video) return uiAlert('Video not stored.'); const v = $('#ep-player'); v.src = URL.createObjectURL(e.video); v.classList.remove('hidden'); v.scrollIntoView({ behavior: 'smooth' }); v.play().catch(() => {}); });
   $$('[data-share]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.share); e.video ? shareBlob(e.video, e.name, e.title) : uiAlert('Video not stored.'); });
   $$('[data-cap]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.cap); await navigator.clipboard.writeText(e.caption); toast('Caption copied'); });
   $$('[data-del]').forEach(b => b.onclick = async () => { if (await uiConfirm('Delete this episode video?')) { await del('episodes', b.dataset.del); renderEpisodes(); } });
 }
+
+/* ---------- backup / restore (cast, places, series; not videos or your key) ---------- */
+$('#backup-btn').onclick = async () => {
+  const data = { app: 'short-drama-studio', v: 1, at: new Date().toISOString(), series: await all('series'), chars: await all('chars'), places: await all('places'),
+    episodes: (await all('episodes')).map(({ video, ...rest }) => rest), settings: { ...S, key: '', pkey: '' } };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  await shareBlob(blob, `drama-backup-${new Date().toISOString().slice(0, 10)}.json`, 'Short Drama Studio backup');
+};
+$('#restore-file').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text()); if (d.app !== 'short-drama-studio') throw new Error('That is not a Short Drama Studio backup.');
+    for (const st of ['series', 'chars', 'places', 'episodes']) for (const x of d[st] || []) if (!(await get(st, x.id))) await put(st, x);
+    if (d.settings) { const keep = { key: S.key, pkey: S.pkey }; Object.assign(S, d.settings, keep); if (!S.key && d.settings.key) S.key = d.settings.key; saveS(); loadSettingsUI(); }
+    renderSeries(); toast('Backup restored'); uiAlert(`Restored ${(d.series || []).length} series, ${(d.chars || []).length} characters, ${(d.places || []).length} places.`);
+  } catch (err) { uiAlert('Restore failed: ' + err.message); }
+  e.target.value = '';
+};
+$('#err-log').onclick = () => { $('#err-log').textContent = ''; $('#err-log').classList.add('hidden'); };
 
 /* ---------- start ---------- */
 fillVoices(); loadSettingsUI(); renderSeries();

@@ -46,3 +46,10 @@ video{width:100%;max-height:70vh;border-radius:12px;background:#000}
 pre{white-space:pre-wrap;font-size:13px;background:#111118;padding:10px;border-radius:10px;color:var(--muted)}
 .ep{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}
 .ep div{flex:1}.ep small{color:var(--muted)}
+/* layout fixes */
+html,body{overflow-x:hidden;max-width:100%}
+input[type=checkbox]{width:22px!important;height:22px;flex:none;margin:0;padding:0}
+label.check{flex-wrap:nowrap;white-space:normal}
+.line-text{outline:none;border-bottom:1px dashed #555}
+.line-text:focus{border-bottom-color:var(--accent);background:#2a2a36}
+.row select{min-width:0}

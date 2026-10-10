@@ -49,6 +49,11 @@
     <label class="check"><input type="checkbox" id="use-narrator" checked> Include a narrator</label>
     <p class="hint">Only the characters in this series' Cast and Places are used, so faces and voices stay the same in every episode.</p>
     <button class="primary" id="write-btn">✍️ Write script</button>
+    <div class="row" style="margin-top:10px">
+      <select id="batch-count"><option value="2">2 episodes</option><option value="3" selected>3 episodes</option><option value="5">5 episodes</option><option value="10">10 episodes</option></select>
+      <button class="ghost" id="batch-btn">⚡ Auto-make episodes</button>
+    </div>
+    <p class="hint">Auto-make writes and records the next episodes one after another. Keep the screen on.</p>
   </div>
 
   <div class="card hidden" id="script-card">
@@ -103,6 +108,7 @@
   <div class="card">
     <h2>Episodes</h2>
     <div id="episode-list"></div>
+    <video id="ep-player" class="hidden" controls playsinline style="width:100%;margin-top:12px;border-radius:12px"></video>
   </div>
 </section>
 
@@ -129,6 +135,13 @@
     <label>Narrator voice</label>
     <select id="set-nvoice" class="voice-select"></select>
     <button class="primary" id="save-settings">Save settings</button>
+    <h2 style="margin-top:22px">Backup</h2>
+    <p class="hint">Save your series, cast pictures and places to a file, so nothing is lost if the browser clears its data. Videos aren't included; save those with Save / Share.</p>
+    <div class="row">
+      <button class="ghost" id="backup-btn">💾 Save backup</button>
+      <label class="ghost" style="text-align:center;padding:12px;border:1px solid #333;border-radius:12px;margin:0">📂 Restore<input type="file" id="restore-file" accept=".json,application/json" hidden></label>
+    </div>
+    <p class="hint">Tap the red error box to clear it.</p>
     <p class="hint">Get a free Gemini key at aistudio.google.com/apikey. The free tier has a daily limit on voices; if you hit it, wait until tomorrow or the app retries slowly.</p>
   </div>
 </section>

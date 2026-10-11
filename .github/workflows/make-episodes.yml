@@ -22,7 +22,7 @@ jobs:
       - name: Make the episodes
         env:
           GEMINI_KEY: ${{ secrets.GEMINI_KEY || secrets.GEMINIKEY }}
-          POLLINATIONS_KEY: ${{ secrets.POLLINATIONS_KEY || secrets.POLLINATIONSKEY }}
+          POLLINATIONS_KEY: ${{ secrets.POLLINATIONS_KEY || secrets.POLLINATIONSKEY || secrets.POLLINATIONKEY }}
           EPISODES: ${{ github.event.inputs.episodes || vars.EPISODES_PER_DAY || '2' }}
           IDEA: ${{ github.event.inputs.idea }}
           GENRE: ${{ vars.GENRE }}

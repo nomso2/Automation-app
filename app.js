@@ -762,7 +762,30 @@ function musicBed(a, dest, total, scenes) {
   }));
 }
 
+function wavB64(buf) {
+  const ch = buf.getChannelData(0), n = ch.length, b = new DataView(new ArrayBuffer(44 + n * 2)), w = (o, s) => [...s].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+  w(0, 'RIFF'); b.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); b.setUint32(16, 16, true); b.setUint16(20, 1, true); b.setUint16(22, 1, true);
+  b.setUint32(24, buf.sampleRate, true); b.setUint32(28, buf.sampleRate * 2, true); b.setUint16(32, 2, true); b.setUint16(34, 16, true); w(36, 'data'); b.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) b.setInt16(44 + i * 2, Math.max(-1, Math.min(1, ch[i])) * 32767, true);
+  const u = new Uint8Array(b.buffer); let bin = ''; for (let k = 0; k < u.length; k += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(k, k + 0x8000));
+  return btoa(bin);
+}
+// cloud: draw every frame one by one (exact length, no real-time clock), the server joins them with ffmpeg
+async function renderOffline(R, imgs) {
+  const cv = $('#stage'), g = cv.getContext('2d'), FPS = 30, n = Math.ceil(R.total * FPS);
+  const off = new OfflineAudioContext(1, Math.ceil(R.total * R.audio.sampleRate), R.audio.sampleRate);
+  const src = off.createBufferSource(); src.buffer = R.audio; src.connect(off.destination); src.start(0);
+  musicBed(off, off.destination, R.total, R.scenes);
+  await window.cloudAudio(wavB64(await off.startRendering()));
+  for (let f = 0; f < n; f++) {
+    drawFrame(g, f / FPS, R, imgs);
+    await window.cloudFrame(cv.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    if (f % 30 === 0) progress(0.6 + 0.4 * f / n, `Drawing video… ${Math.floor(f / FPS)}/${Math.ceil(R.total)}s`);
+  }
+  return new Blob(['offline'], { type: 'video/x-offline' });
+}
 async function renderVideo(R, imgs) {
+  if (window.cloudFrame) return renderOffline(R, imgs);
   const cv = $('#stage'), g = cv.getContext('2d'), a = audioCtx();
   const dest = a.createMediaStreamDestination();
   const stream = cv.captureStream(30);

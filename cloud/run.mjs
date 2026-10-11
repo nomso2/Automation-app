@@ -38,6 +38,10 @@ await page.exposeFunction('edgeTTS', async (text, voice) => {
   catch (e) { say('edge-tts failed: ' + String(e.stderr || e.message).slice(-300)); throw e; }
   const b = fs.readFileSync(f).toString('base64'); fs.unlinkSync(f); return b;
 });
+let frameNo = 0; const FR = path.join(OUT, 'frames');
+const resetFrames = () => { fs.rmSync(FR, { recursive: true, force: true }); fs.mkdirSync(FR, { recursive: true }); frameNo = 0; };
+await page.exposeFunction('cloudAudio', async b64 => { resetFrames(); fs.writeFileSync(path.join(OUT, 'audio.wav'), Buffer.from(b64, 'base64')); });
+await page.exposeFunction('cloudFrame', async b64 => { fs.writeFileSync(path.join(FR, String(frameNo++).padStart(6, '0') + '.jpg'), Buffer.from(b64, 'base64')); });
 await page.goto('http://localhost:8765/index.html', { waitUntil: 'load' });
 await page.setViewport({ width: 420, height: 900 });
 
@@ -90,11 +94,18 @@ for (let i = 0; i < N; i++) {
   }, i);
   if (res.err) { say('FAILED: ' + res.err.trim()); break; }
   const base = `ep${String(res.number).padStart(3, '0')}`;
-  const raw = path.join(OUT, base + (res.type.includes('mp4') ? '.raw.mp4' : '.webm'));
-  fs.writeFileSync(raw, Buffer.from(res.b64, 'base64'));
   const mp4 = path.join(OUT, base + '.mp4');
-  execSync(`ffmpeg -y -loglevel error -i "${raw}" -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -r 30 -c:a aac -b:a 128k -movflags +faststart "${mp4}"`);
-  fs.unlinkSync(raw);
+  if (res.type === 'video/x-offline') {
+    say(`Joining ${frameNo} frames (${(frameNo / 30).toFixed(1)} s)`);
+    execSync(`ffmpeg -y -loglevel error -framerate 30 -i "${FR}/%06d.jpg" -i "${OUT}/audio.wav" -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -c:a aac -b:a 128k -shortest -movflags +faststart "${mp4}"`);
+    fs.rmSync(FR, { recursive: true, force: true }); fs.rmSync(path.join(OUT, 'audio.wav'), { force: true });
+  } else {
+    const raw = path.join(OUT, base + (res.type.includes('mp4') ? '.raw.mp4' : '.webm'));
+    fs.writeFileSync(raw, Buffer.from(res.b64, 'base64'));
+    execSync(`ffmpeg -y -loglevel error -i "${raw}" -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -r 30 -c:a aac -b:a 128k -movflags +faststart "${mp4}"`);
+    fs.unlinkSync(raw);
+  }
+  say('LENGTH: ' + execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${mp4}"`).toString().trim() + ' s');
   fs.writeFileSync(path.join(OUT, base + '.txt'), `${res.series} - Episode ${res.number}: ${res.title}\n\n${res.caption}\n`);
   made.push({ file: base, ...res, b64: undefined });
   say(`Episode ${res.number} done: ${res.title}`);

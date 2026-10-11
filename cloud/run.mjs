@@ -79,7 +79,9 @@ for (let i = 0; i < N; i++) {
       window.__out = null; $('#err-log').textContent = '';
       await writeScript(); btnDone('#write-btn');
       if (!current) return { err: 'No script was written. ' + $('#err-log').textContent };
+      const sc = current.script.scenes; console.log('SCRIPT: ' + sc.length + ' scenes, ' + sc.reduce((a, x) => a + x.lines.length, 0) + ' lines, ' + sc.reduce((a, x) => a + x.lines.reduce((b, l) => b + l.text.split(/\s+/).length, 0), 0) + ' words; actions: ' + sc.map(x => x.action).join(' | ').slice(0, 600));
       const ok = await makeVideo();
+      console.log('SHOTS: ' + current.script.scenes.map((x, k) => (k + 1) + ':' + (x.move ? 'move-' + x.move : x.shot ? 'shot' : 'none')).join(' '));
       if (!ok || !window.__out) return { err: 'Video failed. ' + $('#err-log').textContent + ' ' + $('#progress-text').textContent };
       const buf = new Uint8Array(await window.__out.blob.arrayBuffer());
       let bin = ''; for (let k = 0; k < buf.length; k += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(k, k + 0x8000));

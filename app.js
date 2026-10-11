@@ -95,7 +95,7 @@ async function gemini(model, body, label = 'request') {
   let lastErr;
   for (const m of tried) {
     try { return await geminiOnce(m, body, label); }
-    catch (e) { lastErr = e; if (!/Gemini (404|400)|not found|not supported|limit reached/i.test(e.message)) throw e; logErr(`${m}: ${e.message} — trying next model`); }
+    catch (e) { if (!lastErr || !/limit reached/i.test(lastErr.message)) lastErr = e; if (!/Gemini (404|400)|not found|not supported|limit reached/i.test(e.message)) throw e; logErr(`${m}: ${e.message} — trying next model`); }
   }
   throw lastErr;
 }
@@ -556,12 +556,11 @@ async function voiceEpisode() {
       buf = await tts(text, ids.map(id => ({ label: labelOf(id), voice: voiceOf(id) })));
     }
     } catch (e) {
-      if (!/Daily free limit/.test(e.message)) throw e;
       try {
-        logErr('Gemini voices are used up for today, so switching to the free backup voices.');
+        logErr('Gemini voices failed (' + e.message.slice(0, 80) + '), so switching to the free backup voices.');
         current.backupVoices = true; buf = await backupChunk(ch.lines, voiceOf);
       } catch (e2) {
-        current.backupVoices = false;
+        current.backupVoices = false; logErr('Backup voice failed: ' + e2.message);
         if (!(await uiConfirm(e.message + '\nBackup voice failed too (' + e2.message + ').\n\nMake this video without voices (captions + music only)?'))) throw e;
         current.noVoices = true; buf = silentFor(ch.lines);
       }

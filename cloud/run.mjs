@@ -34,7 +34,8 @@ await page.evaluateOnNewDocument(s => localStorage.setItem('sds_settings', JSON.
 await page.exposeFunction('edgeTTS', async (text, voice) => {
   const { execFileSync } = await import('node:child_process');
   const f = `/tmp/edge-${Date.now()}-${Math.random().toString(36).slice(2)}.mp3`;
-  execFileSync('edge-tts', ['--voice', voice, '--text', text, '--write-media', f], { timeout: 120000 });
+  try { execFileSync('edge-tts', ['--voice', voice, '--text', text, '--write-media', f], { timeout: 120000, stdio: 'pipe' }); }
+  catch (e) { say('edge-tts failed: ' + String(e.stderr || e.message).slice(-300)); throw e; }
   const b = fs.readFileSync(f).toString('base64'); fs.unlinkSync(f); return b;
 });
 await page.goto('http://localhost:8765/index.html', { waitUntil: 'load' });

@@ -284,6 +284,17 @@ async function hordeOnce(prompt, seed, headers, onStatus) {
   return shrink(data);
 }
 const charPrompt = c => `${S.style}. Portrait of ${c.desc}${c.role ? ', ' + c.role : ''}, facing camera, upper body, expressive face, simple blurred background, character reference, highly detailed`;
+const MOVES = [['fly', /\b(fl(y|ies|ew|ying)|soar|hover|float|levitat|glid|swoop)/i], ['run', /\b(run|ran|chas|sprint|flee|fled|race|racing|dash|escap|bolt)/i], ['walk', /\b(walk|storm(s|ed)? (in|out|off|into|away)|march|stride|strode|approach|enter|leav|pac(e|es|ing)\b|stagger)/i]];
+const moveOf = sc => (MOVES.find(([, re]) => re.test(sc.action || '')) || [])[0];
+const POSE = { run: 'running fast, side view facing right, mid stride, arms pumping', fly: 'flying through the air, side view facing right, body horizontal, arms forward like a superhero', walk: 'walking confidently, side view facing right, mid step' };
+const spritePrompt = (c, m) => `${S.style}. Full body of ${c.desc}, ${POSE[m]}, whole body visible head to toe, isolated on a plain flat solid pure green (#00FF00) background, green screen, no shadow, no ground, no other objects`;
+function keyGreen(img) { // turn the green background transparent so the character can move over any scene
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) { const r = p[i], gr = p[i + 1], b = p[i + 2], m = Math.max(r, b);
+    if (gr > 90 && gr > m * 1.35) p[i + 3] = 0; else if (gr > m * 1.1) { p[i + 1] = m; p[i + 3] = Math.min(255, (m * 1.35 - gr) / (m * 0.25 + 1) * 255); } }
+  g.putImageData(d, 0, 0); return c;
+}
 const placePrompt = p => `${S.style}. ${p.desc || p.name}, establishing shot, empty, no people, atmospheric, vertical composition`;
 
 /* ---------- UI: tabs & settings ---------- */
@@ -458,7 +469,7 @@ ${places.map(p => `- ${p.name}`).join('\n')}
 
 Rules:
 - Total spoken words about ${words} so it lasts about ${secs} seconds. 4 to 7 scenes.
-- Every scene needs physical action (a slap, a chase, a ring thrown, a door slammed, a phone dropped), not just talking.
+- Every scene needs physical action (a slap, a chase, a ring thrown, a door slammed, a phone dropped), not just talking. At least one scene should have someone running, chasing or storming off (or flying, if the genre allows it), and say so plainly in its action.
 - Line one must be a shocking hook in the first 3 seconds. Fast, emotional, short lines.
 - ${narr ? 'Use "Narrator" sparingly for scene-setting.' : 'No narrator: only characters speak.'}
 - End on a cliffhanger that makes viewers want the next part.
@@ -614,6 +625,25 @@ function captionChunk(seg, t) {
   const wp = Math.min(0.999, Math.max(0, (p * totalChars - start) / gLen));
   return { words: groups[gi], active: Math.floor(wp * groups[gi].length) };
 }
+function drawMovers(g, t, sc, sprites, local) {
+  const m = sc.move, n = sprites.length;
+  // speed / wind lines
+  g.save(); g.strokeStyle = 'rgba(255,255,255,' + (m === 'walk' ? 0 : 0.35) + ')'; g.lineWidth = 4;
+  for (let i = 0; i < 14; i++) { const y = (i * 97 + 40) % H, len = 120 + (i * 53) % 160, x = W - ((t * (m === 'fly' ? 1400 : 1100) + i * 211) % (W + len * 2)); g.beginPath(); g.moveTo(x, y); g.lineTo(x + len, y); g.stroke(); }
+  g.restore();
+  sprites.forEach((img, k) => {
+    const hgt = m === 'fly' ? 520 : 760, wid = hgt * img.width / img.height;
+    const lead = (n - 1 - k) * 230; // the first on-screen character is in front, the second chases
+    const x = -wid + (W + wid * 0.6) * Math.min(1, 0.25 + local * 0.75) - lead - wid * 0.2 + Math.sin(t * 2 + k) * 20;
+    let y, rot = 0, sq = 1;
+    if (m === 'run') { const ph = Math.abs(Math.sin(t * 13 + k)); y = H * 0.82 - hgt - ph * 45; rot = 0.08 + 0.03 * Math.sin(t * 13 + k); sq = 1 + (1 - ph) * 0.04; }
+    else if (m === 'fly') { y = H * 0.48 - hgt / 2 - Math.sin(local * Math.PI) * 140 + Math.sin(t * 3 + k) * 22; rot = -0.06 + 0.03 * Math.sin(t * 2); }
+    else { const ph = Math.abs(Math.sin(t * 6 + k)); y = H * 0.84 - hgt - ph * 14; rot = 0.025 * Math.sin(t * 6 + k); }
+    g.save(); g.translate(x + wid / 2, y + hgt); g.rotate(rot); g.scale(1 / sq, sq);
+    if (m !== 'fly') { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(0, -4, wid * 0.35, 18, 0, 0, Math.PI * 2); g.fill(); }
+    g.drawImage(img, -wid / 2, -hgt, wid, hgt); g.restore();
+  });
+}
 function drawFrame(g, t, R, imgs) {
   const { scenes, segs, total, endVoice } = R, { script, chars, series } = current;
   g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
@@ -622,7 +652,9 @@ function drawFrame(g, t, R, imgs) {
   // background with slow Ken Burns move
   const clip = imgs['clip' + si];
   if (R.playingSi !== si) { Object.keys(imgs).filter(k => k.startsWith('clip')).forEach(k => imgs[k].pause()); if (clip) { clip.currentTime = 0; clip.play().catch(() => {}); } R.playingSi = si; }
-  const shot = clip || imgs['shot' + si], bg = shot || imgs[sc.placeId];
+  const mvImgs = sc.move ? (sc.onScreen || []).map(id => imgs['sp_' + sc.move + '_' + id]).filter(Boolean) : [];
+  const moving = !clip && mvImgs.length;
+  const shot = moving ? null : (clip || imgs['shot' + si]), bg = shot || imgs[sc.placeId];
   const seg0 = segs.find(s => t >= s.start && t < s.end);
   const sinceLine = seg0 ? t - seg0.start : 9, sinceCut = t - sc.start;
   const punch = 0.10 * Math.exp(-sinceLine * 5);            // zoom punch on every new line
@@ -631,7 +663,10 @@ function drawFrame(g, t, R, imgs) {
   const moves = [[0.6, -0.6, 0, 0], [-0.6, 0.6, 0, 0], [0, 0, 0.5, -0.5], [0, 0, -0.5, 0.5]], mv = moves[si % 4];
   if (bg) { g.save(); if (shake) g.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     if (!shot) g.filter = 'brightness(0.62)';
-    if (clip) coverDraw(g, clip, 1 + punch * 0.5, 0, 0); else coverDraw(g, bg, 1.08 + 0.22 * local + punch, mv[0] + (mv[1] - mv[0]) * local, mv[2] + (mv[3] - mv[2]) * local); g.restore(); }
+    const breathe = 0.012 * Math.sin(t * 1.7), sway = 0.05 * Math.sin(t * 0.9);
+    if (clip) coverDraw(g, clip, 1 + punch * 0.5, 0, 0);
+    else if (moving) { if (!shot) g.filter = 'brightness(0.8)'; const sp = sc.move === 'walk' ? 0.6 : 1.6; coverDraw(g, bg, 1.3, Math.sin(t * 0.15 * sp) * 0 + (((t - sc.start) * 0.35 * sp) % 2) - 1, 0); }
+    else coverDraw(g, bg, 1.08 + 0.22 * local + punch + breathe, mv[0] + (mv[1] - mv[0]) * local + sway, mv[2] + (mv[3] - mv[2]) * local); g.restore(); }
   else { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#2a1630'); gr.addColorStop(1, '#0a0a12'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
   // who is on screen: current speaker, else scene's on-screen cast
   const seg = segs.find(s => t >= s.start && t < s.end);
@@ -639,7 +674,7 @@ function drawFrame(g, t, R, imgs) {
   if (seg && seg.charId && sc.onScreen?.length === 2 && sc.onScreen.includes(seg.charId)) show = sc.onScreen;
   const portraitBox = (id, x, y, w, h, active) => {
     const c = chars.find(c => c.id === id); if (!c) return;
-    const im = imgs[id], bounce = active ? 1 + 0.015 * Math.sin(t * 6) : 0.94;
+    const im = imgs[id], bounce = active ? 1 + 0.02 * Math.abs(Math.sin(t * 9)) + 0.01 * Math.sin(t * 23) : 0.94 + 0.008 * Math.sin(t * 1.7);
     g.save(); g.translate(x + w / 2, y + h / 2); g.scale(bounce, bounce); g.translate(-w / 2, -h / 2);
     g.globalAlpha = active ? 1 : 0.55;
     g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 30;
@@ -654,7 +689,8 @@ function drawFrame(g, t, R, imgs) {
     g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(c.name, w / 2, h + 10);
     g.restore();
   };
-  if (shot) {
+  if (moving) drawMovers(g, t, sc, mvImgs, local);
+  if (shot || moving) {
     // action shot fills the screen; the speaker pops in as a small badge
     if (seg && seg.charId) { const k = Math.min(1, sinceLine * 6); g.save(); g.globalAlpha = k; g.translate(-200 * (1 - k), 0); portraitBox(seg.charId, 30, 120, 200, 250, true); g.restore(); }
   } else if (show.length === 1) portraitBox(show[0], 110, 250, 500, 640, !!(seg && seg.charId === show[0]));
@@ -776,6 +812,13 @@ async function makeVideo() {
       }
       const scs = current.script.scenes;
       for (const [i, sc] of scs.entries()) {
+        const mv = moveOf(sc);
+        if (mv && !sc.clip && sc.onScreen?.length) { // running / flying / walking: animated cut-outs instead of a still shot
+          for (const id of sc.onScreen.slice(0, 2)) { const c = current.chars.find(x => x.id === id); if (!c || c.sprites?.[mv]) continue;
+            try { c.sprites = c.sprites || {}; c.sprites[mv] = await drawPicture(spritePrompt(c, mv), 'char', (c.seed || 3) + 11, st => progress(0.12 + 0.13 * i / scs.length, `Drawing ${c.name} ${mv}ning: ${st}`)); await put('chars', c); }
+            catch (e) { logErr(c.name + ' ' + mv + ': ' + e.message); } }
+          if (sc.onScreen.some(id => current.chars.find(x => x.id === id)?.sprites?.[mv])) { sc.move = mv; continue; }
+        }
         if (sc.shot || sc.clip || !sc.action) continue;
         const who = sc.onScreen.map(id => current.chars.find(c => c.id === id)).filter(Boolean);
         const pl = current.places.find(p => p.id === sc.placeId);
@@ -787,7 +830,8 @@ async function makeVideo() {
     for (const x of [...current.chars, ...current.places]) if (x.img) imgs[x.id] = await loadImg(x.img);
     for (const [i, sc] of current.script.scenes.entries()) {
       if (sc.clip) { try { imgs['clip' + i] = await loadClip(sc.clip); } catch (e) { logErr('Scene ' + (i + 1) + ' clip: ' + e.message); } }
-      if (sc.shot && !imgs['clip' + i]) imgs['shot' + i] = await loadImg(sc.shot);
+      if (sc.move && !imgs['clip' + i]) { for (const id of sc.onScreen) { const c = current.chars.find(x => x.id === id), k = 'sp_' + sc.move + '_' + id; if (c?.sprites?.[sc.move] && !imgs[k]) try { imgs[k] = keyGreen(await loadImg(c.sprites[sc.move])); } catch {} } }
+      else if (sc.shot && !imgs['clip' + i]) imgs['shot' + i] = await loadImg(sc.shot);
     }
     const R = await voiceEpisode();
     progress(0.6, 'Recording video…');

@@ -457,7 +457,9 @@ async function writeScript() {
   const eps = (await bySeries('episodes')).sort((a, b) => a.createdAt - b.createdAt).slice(-5);
   const words = Math.round(secs * 2.3);
   btnBusy('#write-btn', 'Writing…');
-  const j = await geminiJSON(`Write episode ${(series.episodes || 0) + 1} of the vertical short drama series "${series.name}" for TikTok and YouTube Shorts.
+  let j, best;
+  for (let attempt = 0; attempt < 3; attempt++) {
+  j = await geminiJSON(`Write episode ${(series.episodes || 0) + 1} of the vertical short drama series "${series.name}" for TikTok and YouTube Shorts.
 Genre: ${genre}. All spoken lines in ${lang}.
 ${idea ? 'This episode\'s idea: ' + idea : 'Continue the story naturally from the previous episodes.'}
 ${eps.length ? 'Previous episodes (keep continuity):\n' + eps.map((e, i) => `- ${e.title}: ${e.summary}`).join('\n') : 'This is the first episode.'}
@@ -468,7 +470,7 @@ PLACES (use ONLY these exact names):
 ${places.map(p => `- ${p.name}`).join('\n')}
 
 Rules:
-- Total spoken words about ${words} so it lasts about ${secs} seconds. 4 to 7 scenes.
+- IMPORTANT LENGTH: total spoken words must be at least ${words} (about ${secs} seconds). 4 to 7 scenes, each with 3 to 6 lines. Count them.
 - Every scene needs physical action (a slap, a chase, a ring thrown, a door slammed, a phone dropped), not just talking. At least one scene should have someone running, chasing or storming off (or flying, if the genre allows it), and say so plainly in its action.
 - Line one must be a shocking hook in the first 3 seconds. Fast, emotional, short lines.
 - ${narr ? 'Use "Narrator" sparingly for scene-setting.' : 'No narrator: only characters speak.'}
@@ -477,6 +479,12 @@ Return JSON only:
 {"title": string, "hook": "max 7 words for on-screen title", "summary": "2 sentences of what happened, for continuity",
  "caption": "TikTok caption, 1-2 sentences", "hashtags": [5-8 strings without #],
  "scenes": [{"place": exact place name, "action": "one vivid visual sentence of what physically happens (who does what, pose, movement)", "on_screen": [1 or 2 exact character names visible], "lines": [{"speaker": exact character name${narr ? ' or "Narrator"' : ''}, "emotion": "one or two words", "text": string}]}]}`);
+  const wc = x => (Array.isArray(x?.scenes) ? x.scenes : []).reduce((a, sc) => a + (sc.lines || sc.dialogue || sc.dialog || []).reduce((b, l) => b + String(l.text || l.line || l || '').split(/\s+/).length, 0), 0);
+  if (!best || wc(j) > wc(best)) best = j;
+  console.log('Script try ' + (attempt + 1) + ': ' + (j.scenes?.length || 0) + ' scenes, ' + wc(j) + ' words (want ' + words + ')');
+  if (wc(best) >= words * 0.7 && best.scenes.length >= 3) break;
+  }
+  j = best;
   if (!Array.isArray(j.scenes) || !j.scenes.length) throw new Error('The script came back empty. Tap Rewrite.');
   // validate names so nothing outside the locked cast appears
   const findC = n => chars.find(c => c.name.toLowerCase() === String(n || '').trim().toLowerCase()) || chars.find(c => String(n || '').toLowerCase().includes(c.name.toLowerCase().split(' ')[0]));
@@ -484,7 +492,7 @@ Return JSON only:
   j.scenes = j.scenes.map(sc => ({
     placeId: findP(sc.place).id, action: String(sc.action || '').trim(),
     onScreen: (sc.on_screen || []).map(findC).filter(Boolean).map(c => c.id).slice(0, 2),
-    lines: (sc.lines || []).filter(l => l.text).map(l => { const c = /narrator/i.test(l.speaker) ? null : findC(l.speaker); return { charId: c ? c.id : null, emotion: l.emotion || '', text: String(l.text).trim() }; })
+    lines: (sc.lines || sc.dialogue || sc.dialog || []).map(l => typeof l === 'string' ? { speaker: 'Narrator', text: l } : { ...l, text: l.text || l.line || l.dialogue }).filter(l => l.text).map(l => { const c = /narrator/i.test(l.speaker) ? null : findC(l.speaker); return { charId: c ? c.id : null, emotion: l.emotion || '', text: String(l.text).trim() }; })
   })).filter(sc => sc.lines.length);
   current = { script: j, chars, places, series, secs, epId: uid() };
   await saveDraft();

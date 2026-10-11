@@ -1,8 +1,38 @@
-13:28:35 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-13:28:35 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-13:28:36 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-13:28:36 TEST MODE (no GEMINI_KEY secret): fake script, voices and pictures
-13:28:36 Episode 1: writing script
-13:28:36 page: DIALOG: This series has no cast yet. Let the AI create the cast and places from your idea?
-13:28:42 Episode 1 done: Test Episode
-13:28:42 Finished: 1 episode(s)
+13:34:14 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+13:34:14 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+13:34:14 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+13:34:14 Making 1 episode(s)
+13:34:14 Episode 1: writing script
+13:34:14 page: DIALOG: This series has no cast yet. Let the AI create the cast and places from your idea?
+13:35:08 page: Aria Bennett: The free picture line is about 23 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:14 page: Victoria Sterling: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:20 page: Sebastian Vance: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:26 page: Julian Thorne: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:33 page: Thorne Tower Penthouse: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:40 page: Aria's Secret Archive: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:48 page: The Grand Ballroom at Sterling Estate: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:35:54 page: Scene 1: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:36:00 page: Scene 2: The free picture line is about 22 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:36:08 page: Scene 3: The free picture line is about 21 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:36:17 page: Scene 4: The free picture line is about 21 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:36:24 page: Scene 5: The free picture line is about 21 minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.
+13:36:24 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:24 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:24 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:24 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:40 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:40 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:40 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:40 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:47 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:47 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:47 page: Failed to load resource: the server responded with a status of 400 ()
+13:36:47 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:36:57 page: Failed to load resource: the server responded with a status of 429 ()
+13:37:01 page: Failed to load resource: the server responded with a status of 429 ()
+13:38:01 page: Failed to load resource: the server responded with a status of 400 ()
+13:38:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:38:01 page: Failed to load resource: the server responded with a status of 400 ()
+13:38:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:39:40 Episode 1 done: Tempting the Ruthless CEO - Episode 1
+13:39:40 Finished: 1 episode(s)

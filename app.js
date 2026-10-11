@@ -428,8 +428,25 @@ Return JSON only:
     onScreen: (sc.on_screen || []).map(findC).filter(Boolean).map(c => c.id).slice(0, 2),
     lines: (sc.lines || []).filter(l => l.text).map(l => { const c = /narrator/i.test(l.speaker) ? null : findC(l.speaker); return { charId: c ? c.id : null, emotion: l.emotion || '', text: String(l.text).trim() }; })
   })).filter(sc => sc.lines.length);
-  current = { script: j, chars, places, series, secs };
+  current = { script: j, chars, places, series, secs, epId: uid() };
+  await saveDraft();
   showScript();
+}
+// every written script is saved to Episodes right away, so nothing is lost if the video fails
+async function saveDraft() {
+  if (!current) return;
+  const old = await get('episodes', current.epId);
+  if (old && old.video) return;
+  await put('episodes', { id: current.epId, seriesId: current.series.id, number: (current.series.episodes || 0) + 1, title: current.script.title, summary: current.script.summary,
+    caption: current.script.caption || '', createdAt: old?.createdAt || Date.now(), draft: true, script: current.script, secs: current.secs });
+}
+async function openDraft(id) {
+  const e = await get('episodes', id); if (!e?.script) return uiAlert('This episode has no saved script.');
+  const series = await get('series', e.seriesId); if (!series) return uiAlert('Its series was deleted.');
+  S.seriesId = series.id; saveS(); renderSeries();
+  const chars = (await all('chars')).filter(c => c.seriesId === series.id), places = (await all('places')).filter(p => p.seriesId === series.id);
+  current = { script: e.script, chars, places, series, secs: e.secs || 60, epId: e.id };
+  $$('nav button')[0].click(); showScript(); toast('Script opened. Tap Make video.');
 }
 function btnBusy(sel, txt) { const b = $(sel); b.dataset.label ??= b.textContent; b.textContent = txt; b.disabled = true; }
 function btnDone(sel) { const b = $(sel); if (b.dataset.label) b.textContent = b.dataset.label; b.disabled = false; }
@@ -439,7 +456,7 @@ function showScript() {
   const cn = id => id ? (chars.find(c => c.id === id)?.name || '?') : 'Narrator';
   $('#ep-title').textContent = script.title;
   $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map((sc, si) => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div>${sc.lines.map((l, li) => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: <span class="line-text" contenteditable="true" data-s="${si}" data-l="${li}">${esc(l.text)}</span></p>`).join('')}</div>`).join('') + '<p class="hint">Tip: tap any line to change the words before making the video.</p>';
-  $$('.line-text').forEach(el => el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); });
+  $$('.line-text').forEach(el => el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); }); el.onblur = () => saveDraft().catch(() => {});
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }
@@ -701,7 +718,7 @@ async function makeVideo() {
     // save the episode & move the series forward
     const s = current.series; s.episodes = (s.episodes || 0) + 1; s.summary = current.script.summary; await put('series', s);
     const caption = `${current.script.caption || current.script.title}\n\n${(current.script.hashtags || []).map(h => '#' + String(h).replace(/^#/, '').replace(/\s+/g, '')).join(' ')} #shortdrama #fyp`;
-    await put('episodes', { id: uid(), seriesId: s.id, number: s.episodes, title: current.script.title, summary: current.script.summary, caption, createdAt: Date.now(), video: blob, name: lastName });
+    await put('episodes', { id: current.epId || uid(), script: current.script, secs: current.secs, seriesId: s.id, number: s.episodes, title: current.script.title, summary: current.script.summary, caption, createdAt: Date.now(), video: blob, name: lastName });
     showResult(blob, caption); ok = true;
     renderSeries();
     progress(1, 'Done!');
@@ -741,9 +758,10 @@ $('#copy-caption-btn').onclick = async () => { await navigator.clipboard.writeTe
 /* ---------- episodes ---------- */
 async function renderEpisodes() {
   const eps = (await all('episodes')).sort((a, b) => b.createdAt - a.createdAt), ss = await all('series');
-  $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}</small></div>
-    <button class="ghost small" data-play="${e.id}">▶︎</button><button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
-  $$('[data-play]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.play); if (!e.video) return uiAlert('Video not stored.'); const v = $('#ep-player'); v.src = URL.createObjectURL(e.video); v.classList.remove('hidden'); v.scrollIntoView({ behavior: 'smooth' }); v.play().catch(() => {}); });
+  $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}${e.video ? '' : ' · <b style="color:#fbbf24">script only</b>'}</small></div>
+    ${e.script ? `<button class="ghost small" data-open="${e.id}">✏️</button>` : ''}<button class="ghost small" data-play="${e.id}">▶︎</button><button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
+  $$('[data-open]').forEach(b => b.onclick = () => openDraft(b.dataset.open));
+  $$('[data-play]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.play); if (!e.video) return uiAlert('No video yet. Tap ✏️ to open the script and make the video.'); const v = $('#ep-player'); v.src = URL.createObjectURL(e.video); v.classList.remove('hidden'); v.scrollIntoView({ behavior: 'smooth' }); v.play().catch(() => {}); });
   $$('[data-share]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.share); e.video ? shareBlob(e.video, e.name, e.title) : uiAlert('Video not stored.'); });
   $$('[data-cap]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.cap); await navigator.clipboard.writeText(e.caption); toast('Caption copied'); });
   $$('[data-del]').forEach(b => b.onclick = async () => { if (await uiConfirm('Delete this episode video?')) { await del('episodes', b.dataset.del); renderEpisodes(); } });

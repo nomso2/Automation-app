@@ -21,8 +21,8 @@ jobs:
       - run: cd cloud && npm install --no-audit --no-fund
       - name: Make the episodes
         env:
-          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
-          POLLINATIONS_KEY: ${{ secrets.POLLINATIONS_KEY }}
+          GEMINI_KEY: ${{ secrets.GEMINI_KEY || secrets.GEMINIKEY }}
+          POLLINATIONS_KEY: ${{ secrets.POLLINATIONS_KEY || secrets.POLLINATIONSKEY }}
           EPISODES: ${{ github.event.inputs.episodes || vars.EPISODES_PER_DAY || '2' }}
           IDEA: ${{ github.event.inputs.idea }}
           GENRE: ${{ vars.GENRE }}
@@ -37,7 +37,7 @@ jobs:
             [ -f "$f" ] || continue
             b="${f%.mp4}"; tag="$b-$(date +%Y%m%d-%H%M%S)"
             title="$(head -n1 "$b.txt")"
-            if [ -z "${{ secrets.GEMINI_KEY }}" ]; then tag="test-$tag"; title="TEST: $title"; fi
+            if [ -z "${{ secrets.GEMINI_KEY || secrets.GEMINIKEY }}" ]; then tag="test-$tag"; title="TEST: $title"; fi
             gh release create "$tag" "$f" --title "$title" --notes-file "$b.txt"
           done
       - name: Save series progress

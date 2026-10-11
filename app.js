@@ -183,7 +183,7 @@ async function drawPicture(prompt, kind, seed, onStatus) {
       return shrink(await fileToDataURL(b));
     } catch (e) { logErr(e.message + ' — falling back to AI Horde'); }
   }
-  if (S.imgsrc === 'pollinations') {
+  if (S.imgsrc === 'pollinations' || S.pkey) { // any saved Pollinations key = fast path
     if (!S.pkey) throw new Error('Add your Pollinations key in Settings (free at enter.pollinations.ai).');
     onStatus('Drawing…');
     const w = portrait ? 768 : 720, h = portrait ? 1024 : 1280;
@@ -220,6 +220,10 @@ async function hordeOnce(prompt, seed, headers, onStatus) {
     await sleep(5000);
     const c = await (await fetch('https://aihorde.net/api/v2/generate/check/' + j.id, { headers })).json();
     if (c.faulted) throw new Error('AI Horde failed this picture. Try again.');
+    if (!c.done && c.wait_time > 180) {
+      fetch('https://aihorde.net/api/v2/generate/status/' + j.id, { method: 'DELETE', headers }).catch(() => {});
+      throw new Error(`The free picture line is about ${Math.round(c.wait_time / 60)} minutes long right now. Paste your Pollinations key in Settings (pictures in seconds), or tap Upload.`);
+    }
     onStatus(c.done ? 'Finishing…' : `Free queue: position ${c.queue_position ?? '?'}, about ${c.wait_time ?? '?'}s`);
     if (c.done) break;
   }

@@ -53,3 +53,7 @@ label.check{flex-wrap:nowrap;white-space:normal}
 .line-text{outline:none;border-bottom:1px dashed #555}
 .line-text:focus{border-bottom-color:var(--accent);background:#2a2a36}
 .row select{min-width:0}
+
+.clip-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+.filebtn{display:inline-block;padding:6px 10px;border-radius:10px;cursor:pointer;border:1px solid #444;font-size:13px}
+.clip-ok{font-size:12px;color:#7be38b}.clip-ok a{color:#aaa;margin-left:4px}

@@ -162,6 +162,10 @@ function playBuffer(buf) { const a = audioCtx(), s = a.createBufferSource(); s.b
 
 /* ---------- images ---------- */
 function fileToDataURL(blob) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(blob); }); }
+function loadClip(blob) {
+  return new Promise((res, rej) => { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.loop = true; v.preload = 'auto'; v.setAttribute('playsinline', '');
+    v.onloadeddata = () => res(v); v.onerror = () => rej(new Error('could not open this video')); v.src = URL.createObjectURL(blob); v.load(); setTimeout(() => rej(new Error('video took too long to open')), 20000); });
+}
 function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
 async function shrink(dataURL, max = 1080) {
   const img = await loadImg(dataURL), sc = Math.min(1, max / Math.max(img.width, img.height));
@@ -451,12 +455,22 @@ async function openDraft(id) {
 function btnBusy(sel, txt) { const b = $(sel); b.dataset.label ??= b.textContent; b.textContent = txt; b.disabled = true; }
 function btnDone(sel) { const b = $(sel); if (b.dataset.label) b.textContent = b.dataset.label; b.disabled = false; }
 
+function veoPrompt(si) {
+  const sc = current.script.scenes[si];
+  const who = (sc.onScreen || []).map(id => current.chars.find(c => c.id === id)).filter(Boolean);
+  const pl = current.places.find(p => p.id === sc.placeId);
+  const lines = sc.lines.map(l => (current.chars.find(c => c.id === l.charId)?.name || 'Narrator') + (l.emotion ? ' (' + l.emotion + ')' : '') + ': ' + l.text).join(' / ');
+  return `Vertical 9:16 video, 8 seconds. ${S.style}. Setting: ${pl ? (pl.desc || pl.name) : ''}. Characters: ${who.map(c => c.name + ', ' + c.desc).join('; ') || 'none'}. Action: ${sc.action || 'the characters react dramatically'}. The characters act out this moment with clear body language and facial expressions, mouths moving as they talk: ${lines}. Cinematic camera movement. No text, no subtitles, no music.`;
+}
 function showScript() {
   const { script, chars, places } = current;
   const cn = id => id ? (chars.find(c => c.id === id)?.name || '?') : 'Narrator';
   $('#ep-title').textContent = script.title;
-  $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map((sc, si) => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div>${sc.lines.map((l, li) => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: <span class="line-text" contenteditable="true" data-s="${si}" data-l="${li}">${esc(l.text)}</span></p>`).join('')}</div>`).join('') + '<p class="hint">Tip: tap any line to change the words before making the video.</p>';
+  $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map((sc, si) => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div><div class="clip-tools"><button class="ghost small" data-vprompt="${si}">📋 Copy AI Studio prompt</button><label class="ghost small filebtn">🎬 ${sc.clip ? 'Change clip' : 'Add moving clip'}<input type="file" accept="video/*" data-clip="${si}" hidden></label>${sc.clip ? `<span class="clip-ok">✅ clip added <a href="#" data-unclip="${si}">remove</a></span>` : ''}</div>${sc.lines.map((l, li) => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: <span class="line-text" contenteditable="true" data-s="${si}" data-l="${li}">${esc(l.text)}</span></p>`).join('')}</div>`).join('') + '<p class="hint">Tip: tap any line to change the words before making the video.</p>';
   $$('.line-text').forEach(el => { el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); }; el.onblur = () => saveDraft().catch(() => {}); });
+  $$('[data-vprompt]').forEach(b => b.onclick = async () => { await navigator.clipboard.writeText(veoPrompt(+b.dataset.vprompt)); toast('Prompt copied. Paste it into AI Studio (Veo), download the clip, then tap Add moving clip.'); });
+  $$('[data-clip]').forEach(inp => inp.onchange = async () => { const f = inp.files[0]; if (!f) return; current.script.scenes[+inp.dataset.clip].clip = f; await saveDraft().catch(() => {}); showScript(); toast('Clip added to scene ' + (+inp.dataset.clip + 1)); });
+  $$('[data-unclip]').forEach(a => a.onclick = async e => { e.preventDefault(); delete current.script.scenes[+a.dataset.unclip].clip; await saveDraft().catch(() => {}); showScript(); });
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }
@@ -524,7 +538,8 @@ async function resample(buf, rate) {
 
 /* ---------- rendering ---------- */
 function coverDraw(g, img, scale, panX, panY) {
-  const r = Math.max(W / img.width, H / img.height) * scale, w = img.width * r, h = img.height * r;
+  const iw0 = img.videoWidth || img.width, ih0 = img.videoHeight || img.height; if (!iw0) return;
+  const r = Math.max(W / iw0, H / ih0) * scale, w = iw0 * r, h = ih0 * r;
   g.drawImage(img, (W - w) / 2 + panX * (w - W) / 2, (H - h) / 2 + panY * (h - H) / 2, w, h);
 }
 function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
@@ -549,7 +564,9 @@ function drawFrame(g, t, R, imgs) {
   const si = Math.max(0, scenes.findIndex(s => t >= s.start && t < s.end)), sc = scenes[si] || scenes[scenes.length - 1];
   const local = (t - sc.start) / Math.max(0.1, sc.end - sc.start);
   // background with slow Ken Burns move
-  const shot = imgs['shot' + si], bg = shot || imgs[sc.placeId];
+  const clip = imgs['clip' + si];
+  if (R.playingSi !== si) { Object.keys(imgs).filter(k => k.startsWith('clip')).forEach(k => imgs[k].pause()); if (clip) { clip.currentTime = 0; clip.play().catch(() => {}); } R.playingSi = si; }
+  const shot = clip || imgs['shot' + si], bg = shot || imgs[sc.placeId];
   const seg0 = segs.find(s => t >= s.start && t < s.end);
   const sinceLine = seg0 ? t - seg0.start : 9, sinceCut = t - sc.start;
   const punch = 0.10 * Math.exp(-sinceLine * 5);            // zoom punch on every new line
@@ -558,7 +575,7 @@ function drawFrame(g, t, R, imgs) {
   const moves = [[0.6, -0.6, 0, 0], [-0.6, 0.6, 0, 0], [0, 0, 0.5, -0.5], [0, 0, -0.5, 0.5]], mv = moves[si % 4];
   if (bg) { g.save(); if (shake) g.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     if (!shot) g.filter = 'brightness(0.62)';
-    coverDraw(g, bg, 1.08 + 0.22 * local + punch, mv[0] + (mv[1] - mv[0]) * local, mv[2] + (mv[3] - mv[2]) * local); g.restore(); }
+    if (clip) coverDraw(g, clip, 1 + punch * 0.5, 0, 0); else coverDraw(g, bg, 1.08 + 0.22 * local + punch, mv[0] + (mv[1] - mv[0]) * local, mv[2] + (mv[3] - mv[2]) * local); g.restore(); }
   else { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#2a1630'); gr.addColorStop(1, '#0a0a12'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
   // who is on screen: current speaker, else scene's on-screen cast
   const seg = segs.find(s => t >= s.start && t < s.end);
@@ -672,6 +689,7 @@ async function renderVideo(R, imgs) {
     loop();
   });
   await sleep(300); rec.stop(); await done;
+  Object.keys(imgs).filter(k => k.startsWith('clip')).forEach(k => { imgs[k].pause(); URL.revokeObjectURL(imgs[k].src); });
   return new Blob(chunks, { type: mime.split(';')[0] });
 }
 
@@ -701,7 +719,7 @@ async function makeVideo() {
       }
       const scs = current.script.scenes;
       for (const [i, sc] of scs.entries()) {
-        if (sc.shot || !sc.action) continue;
+        if (sc.shot || sc.clip || !sc.action) continue;
         const who = sc.onScreen.map(id => current.chars.find(c => c.id === id)).filter(Boolean);
         const pl = current.places.find(p => p.id === sc.placeId);
         const prompt = `${S.style}. ${sc.action}. Characters: ${who.map(c => c.name + ' (' + c.desc + ')').join('; ')}. Setting: ${pl ? (pl.desc || pl.name) : ''}. Dynamic action shot, motion, dramatic angle, vertical frame, cinematic`;
@@ -710,7 +728,10 @@ async function makeVideo() {
       }
     }
     for (const x of [...current.chars, ...current.places]) if (x.img) imgs[x.id] = await loadImg(x.img);
-    for (const [i, sc] of current.script.scenes.entries()) if (sc.shot) imgs['shot' + i] = await loadImg(sc.shot);
+    for (const [i, sc] of current.script.scenes.entries()) {
+      if (sc.clip) { try { imgs['clip' + i] = await loadClip(sc.clip); } catch (e) { logErr('Scene ' + (i + 1) + ' clip: ' + e.message); } }
+      if (sc.shot && !imgs['clip' + i]) imgs['shot' + i] = await loadImg(sc.shot);
+    }
     const R = await voiceEpisode();
     progress(0.6, 'Recording video…');
     const blob = await renderVideo(R, imgs);

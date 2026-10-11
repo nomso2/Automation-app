@@ -642,7 +642,7 @@ function drawMovers(g, t, sc, sprites, local) {
   sprites.forEach((img, k) => {
     const hgt = m === 'fly' ? 520 : 760, wid = hgt * img.width / img.height;
     const lead = (n - 1 - k) * 230; // the first on-screen character is in front, the second chases
-    const x = -wid + (W + wid * 0.6) * Math.min(1, 0.25 + local * 0.75) - lead - wid * 0.2 + Math.sin(t * 2 + k) * 20;
+    const cyc = (t * (m === 'walk' ? 0.12 : 0.3)) % 1, x = -wid + (W + wid + 260) * cyc - lead + Math.sin(t * 2 + k) * 20; // keeps crossing the screen
     let y, rot = 0, sq = 1;
     if (m === 'run') { const ph = Math.abs(Math.sin(t * 13 + k)); y = H * 0.82 - hgt - ph * 45; rot = 0.08 + 0.03 * Math.sin(t * 13 + k); sq = 1 + (1 - ph) * 0.04; }
     else if (m === 'fly') { y = H * 0.48 - hgt / 2 - Math.sin(local * Math.PI) * 140 + Math.sin(t * 3 + k) * 22; rot = -0.06 + 0.03 * Math.sin(t * 2); }

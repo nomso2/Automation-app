@@ -14,7 +14,7 @@
 </head>
 <body>
 <header>
-  <h1>🎬 Short Drama Studio <small style="font-size:12px;opacity:.5">v18</small></h1>
+  <h1>🎬 Short Drama Studio <small style="font-size:12px;opacity:.5">v19</small></h1>
   <nav>
     <button data-tab="create" class="active">Create</button>
     <button data-tab="cast">Cast</button>
@@ -140,6 +140,13 @@
     <label>GitHub token (for "Make in cloud now")</label>
     <input id="set-gtoken" type="password" placeholder="github_pat_...">
     <p class="hint">Make one at github.com/settings/personal-access-tokens/new: pick Only select repositories → Automation-app, then Repository permissions → Actions → Read and write.</p>
+    <label>Voices</label>
+    <select id="set-vmode">
+      <option value="gemini">Gemini first, free backup when it runs out</option>
+      <option value="microsoft">Microsoft voices only (needs relay below)</option>
+    </select>
+    <label>Microsoft voice relay link (optional)</label>
+    <input id="set-edgeurl" placeholder="https://....workers.dev">
     <label>Script model</label>
     <input id="set-tmodel">
     <label>Voice model</label>

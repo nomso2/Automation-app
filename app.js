@@ -176,6 +176,11 @@ function backupVoiceFor(gv, list) {
 let kokoro;
 async function backupLine(text, gv) {
   const a = audioCtx();
+  if (S.edgeUrl && !window.edgeTTS) { // phone: Microsoft voices through your Cloudflare relay
+    const r = await fetch(S.edgeUrl.replace(/\/$/, '') + '/?voice=' + encodeURIComponent(backupVoiceFor(gv, 'edge')) + '&text=' + encodeURIComponent(text));
+    if (!r.ok) throw new Error('Microsoft voice relay: ' + (await r.text()).slice(0, 120));
+    return await a.decodeAudioData(await r.arrayBuffer());
+  }
   if (window.edgeTTS) { // cloud: Microsoft Edge voices
     const b64 = await window.edgeTTS(text, backupVoiceFor(gv, 'edge'));
     const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
@@ -293,11 +298,11 @@ function fillVoices() {
   $$('.voice-select').forEach(s => s.innerHTML = VOICES.map(([v, d]) => `<option value="${v}">${v} — ${d}</option>`).join(''));
 }
 function loadSettingsUI() {
-  $('#set-key').value = S.key; $('#set-pkey').value = S.pkey; $('#set-gtoken').value = S.gtoken || ''; $('#set-style').value = S.style;
+  $('#set-key').value = S.key; $('#set-pkey').value = S.pkey; $('#set-gtoken').value = S.gtoken || ''; $('#set-edgeurl').value = S.edgeUrl || ''; $('#set-vmode').value = S.voiceMode || 'gemini'; $('#set-style').value = S.style;
   $('#set-imgsrc').value = S.imgsrc; $('#set-tmodel').value = S.tmodel; $('#set-vmodel').value = S.vmodel; $('#set-nvoice').value = S.nvoice;
 }
 $('#save-settings').onclick = () => {
-  Object.assign(S, { key: $('#set-key').value.trim(), pkey: $('#set-pkey').value.trim(), gtoken: $('#set-gtoken').value.trim(), style: $('#set-style').value.trim() || DEFAULTS.style,
+  Object.assign(S, { key: $('#set-key').value.trim(), pkey: $('#set-pkey').value.trim(), gtoken: $('#set-gtoken').value.trim(), edgeUrl: $('#set-edgeurl').value.trim(), voiceMode: $('#set-vmode').value, style: $('#set-style').value.trim() || DEFAULTS.style,
     imgsrc: $('#set-imgsrc').value, hordeChosen: $('#set-imgsrc').value === 'horde', tmodel: $('#set-tmodel').value.trim() || DEFAULTS.tmodel, vmodel: $('#set-vmodel').value.trim() || DEFAULTS.vmodel,
     nvoice: $('#set-nvoice').value });
   saveS(); toast('Settings saved');
@@ -541,7 +546,7 @@ async function voiceEpisode() {
     const ids = ch.keys.map(k => k === 'N' ? null : k);
     let buf;
     if (current.noVoices) buf = silentFor(ch.lines);
-    else if (current.backupVoices) buf = await backupChunk(ch.lines, voiceOf);
+    else if (current.backupVoices || (S.voiceMode === 'microsoft' && (S.edgeUrl || window.edgeTTS))) buf = await backupChunk(ch.lines, voiceOf);
     else try {
     if (ids.length === 1) {
       const l = ch.lines;

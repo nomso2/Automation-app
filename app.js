@@ -194,7 +194,24 @@ async function drawPicture(prompt, kind, seed, onStatus) {
   }
   // AI Horde (free, anonymous)
   const headers = { 'Content-Type': 'application/json', apikey: '0000000000', 'Client-Agent': 'short-drama-studio:1.0:nomso2' };
-  const body = { prompt: prompt + ' ### text, watermark, blurry, deformed, extra fingers, nsfw', nsfw: false, censor_nsfw: true, r2: false,
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const p = attempt === 0 ? safePrompt(prompt) : safePrompt(prompt, true);
+    try { return await hordeOnce(p, seed + attempt * 7919, headers, onStatus); }
+    catch (e) { if (e.message !== 'CENSORED' ) throw e; onStatus('Free maker blocked it by mistake, retrying with safer wording…'); }
+  }
+  throw new Error('The free picture maker keeps blocking this description. Change words like "backless", "seductive" or "predatory", use Pollinations, or upload a picture.');
+}
+// AI Horde's filter misfires on fashion/villain words. Soften them and insist on family-friendly framing.
+function safePrompt(p, strong) {
+  const swaps = [[/\b(backless|low[- ]cut|plunging|revealing|strapless|cleavage|skimpy|tight[- ]fitting|form[- ]fitting)\b/gi, 'elegant'],
+    [/\b(sexy|seductive|sultry|sensual|alluring|predatory|provocative|naked|nude|bare|lingerie|bikini)\b/gi, 'confident'],
+    [/\b(bold red lips|red lips)\b/gi, 'red lipstick'], [/\b(blood|bloody|gore)\b/gi, 'dramatic']];
+  if (strong) swaps.forEach(([re, w]) => p = p.replace(re, w));
+  else p = p.replace(swaps[0][0], 'elegant').replace(swaps[1][0], 'confident');
+  return p + ', fully clothed, modest, family friendly, wholesome animated movie character';
+}
+async function hordeOnce(prompt, seed, headers, onStatus) {
+  const body = { prompt: prompt + ' ### text, watermark, blurry, deformed, extra fingers, nsfw, nude, cleavage', nsfw: false, censor_nsfw: true, r2: false,
     params: { width: 512, height: 512, steps: 24, n: 1, sampler_name: 'k_euler_a', cfg_scale: 7, seed: String(seed) } };
   const r = await fetch('https://aihorde.net/api/v2/generate/async', { method: 'POST', headers, body: JSON.stringify(body) });
   const j = await r.json();
@@ -207,7 +224,9 @@ async function drawPicture(prompt, kind, seed, onStatus) {
     if (c.done) break;
   }
   const st = await (await fetch('https://aihorde.net/api/v2/generate/status/' + j.id, { headers })).json();
-  const img = st.generations?.[0]?.img;
+  const gen = st.generations?.[0];
+  if (gen?.censored) throw new Error('CENSORED');
+  const img = gen?.img;
   if (!img) throw new Error('AI Horde returned no picture.');
   const data = img.startsWith('http') ? await fileToDataURL(await (await fetch(img)).blob()) : 'data:image/webp;base64,' + img;
   return shrink(data);

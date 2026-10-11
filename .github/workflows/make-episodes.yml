@@ -1,0 +1,49 @@
+name: Make episodes
+on:
+  schedule:
+    - cron: '0 7 * * *'   # every day 8:00 am Lagos time
+  workflow_dispatch:
+    inputs:
+      episodes: { description: 'How many episodes', default: '2' }
+      idea: { description: 'Story idea (optional)', default: '' }
+permissions:
+  contents: write
+concurrency: { group: make-episodes, cancel-in-progress: false }
+jobs:
+  make:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: cd cloud && npm install --no-audit --no-fund
+      - name: Make the episodes
+        env:
+          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+          POLLINATIONS_KEY: ${{ secrets.POLLINATIONS_KEY }}
+          EPISODES: ${{ github.event.inputs.episodes || vars.EPISODES_PER_DAY || '2' }}
+          IDEA: ${{ github.event.inputs.idea }}
+          GENRE: ${{ vars.GENRE }}
+          LANG_NAME: ${{ vars.LANGUAGE }}
+        run: node cloud/run.mjs
+      - name: Publish episodes
+        if: always()
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          cd cloud/out 2>/dev/null || exit 0
+          for f in ep*.mp4; do
+            [ -f "$f" ] || continue
+            b="${f%.mp4}"; tag="$b-$(date +%Y%m%d-%H%M%S)"
+            title="$(head -n1 "$b.txt")"
+            if [ -z "${{ secrets.GEMINI_KEY }}" ]; then tag="test-$tag"; title="TEST: $title"; fi
+            gh release create "$tag" "$f" --title "$title" --notes-file "$b.txt"
+          done
+      - name: Save series progress
+        if: always()
+        run: |
+          git config user.name "drama-bot"; git config user.email "drama-bot@users.noreply.github.com"
+          git add cloud/state.json cloud/last-run.log 2>/dev/null || true
+          git commit -m "Cloud run $(date +%F)" || exit 0
+          git pull --rebase -q && git push

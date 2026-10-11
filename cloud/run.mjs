@@ -11,8 +11,10 @@ const OUT = path.join(ROOT, 'cloud', 'out');
 const N = Math.max(1, Math.min(10, +(process.env.EPISODES || 2)));
 const MOCK = !process.env.GEMINI_KEY; // test mode when no key secret yet
 fs.mkdirSync(OUT, { recursive: true });
-const log = [];
-const say = m => { const l = new Date().toISOString().slice(11, 19) + ' ' + m; console.log(l); log.push(l); };
+const LOG = path.join(ROOT, 'cloud', 'last-run.log'); fs.writeFileSync(LOG, '');
+const say = m => { const l = new Date().toISOString().slice(11, 19) + ' ' + m; console.log(l); fs.appendFileSync(LOG, l + '\n'); };
+process.on('uncaughtException', e => { say('CRASH: ' + (e.stack || e.message)); process.exit(1); });
+process.on('unhandledRejection', e => { say('CRASH: ' + (e?.stack || e)); process.exit(1); });
 
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
 const server = http.createServer((q, r) => {
@@ -95,6 +97,6 @@ if (!MOCK) {
   fs.writeFileSync(STATE, JSON.stringify(st));
 }
 fs.writeFileSync(path.join(OUT, 'made.json'), JSON.stringify(made));
-fs.writeFileSync(path.join(ROOT, 'cloud', 'last-run.log'), log.join('\n') + '\n');
+say(`Finished: ${made.length} episode(s)`);
 await browser.close(); server.close();
 process.exit(made.length ? 0 : 1);

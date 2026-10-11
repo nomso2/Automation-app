@@ -185,7 +185,7 @@ async function drawPicture(prompt, kind, seed, onStatus) {
   }
   if (S.imgsrc === 'pollinations' || S.pkey) { // any saved Pollinations key = fast path
     if (!S.pkey) throw new Error('Add your Pollinations key in Settings (free at enter.pollinations.ai).');
-    onStatus('Drawing…');
+    onStatus('Drawing with Pollinations (a few seconds)…');
     const w = portrait ? 768 : 720, h = portrait ? 1024 : 1280;
     const url = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?model=flux&width=${w}&height=${h}&seed=${seed}&nologo=true&key=${encodeURIComponent(S.pkey)}`;
     const r = await fetch(url, { headers: { Authorization: 'Bearer ' + S.pkey } });
@@ -193,6 +193,7 @@ async function drawPicture(prompt, kind, seed, onStatus) {
     return shrink(await fileToDataURL(await r.blob()));
   }
   // AI Horde (free, anonymous)
+  onStatus('No Pollinations key saved, using the slow free line…');
   const headers = { 'Content-Type': 'application/json', apikey: '0000000000', 'Client-Agent': 'short-drama-studio:1.0:nomso2' };
   for (let attempt = 0; attempt < 3; attempt++) {
     const p = attempt === 0 ? safePrompt(prompt) : safePrompt(prompt, true);

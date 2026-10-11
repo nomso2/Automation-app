@@ -1,52 +1,31 @@
-14:32:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-14:32:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-14:32:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-14:32:26 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-14:32:26 Making 1 episode(s)
-14:32:26 Episode 1: writing script
-14:34:20 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:20 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:20 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:20 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:20 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:20 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:25 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:25 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:25 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:25 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:25 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:25 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:29 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:29 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:29 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:29 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:29 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:29 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:34 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:34 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:34 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:34 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:35 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:35 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:40 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:40 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:40 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:40 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:41 page: Failed to load resource: the server responded with a status of 429 ()
-14:34:41 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:34:41 page: Failed to load resource: the server responded with a status of 429 ()
-14:35:01 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:05 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:05 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:36:05 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:05 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:36:05 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:05 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:36:07 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:07 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:36:07 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:07 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:36:07 page: Failed to load resource: the server responded with a status of 429 ()
-14:36:07 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
-14:37:20 Episode 3 done: Tempting the Ruthless CEO - Episode 3
-14:37:20 Finished: 1 episode(s)
+14:41:13 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+14:41:13 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+14:41:13 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+14:41:13 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+14:41:13 Making 1 episode(s)
+14:41:13 Episode 1: writing script
+14:42:18 page: Failed to load resource: the server responded with a status of 503 ()
+14:43:41 page: Failed to load resource: the server responded with a status of 503 ()
+14:46:10 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:10 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:10 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:10 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:10 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:11 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:19 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:19 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:19 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:19 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:19 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:19 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:25 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:25 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:25 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:25 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:25 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:25 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:25 page: Failed to load resource: the server responded with a status of 429 ()
+14:46:25 page: gemini-2.5-flash-preview-tts: Daily free limit reached for voices (Google says wait about 9 h). Try again later (or add billing to your Gemini key). — trying next model
+14:46:25 page: Gemini voices failed (Daily free limit reached for voices (Google says wait about 9 h). Try again late), so switching to the free backup voices.
+14:47:48 Episode 4 done: Tempting the Ruthless CEO - Episode 4
+14:47:48 Finished: 1 episode(s)

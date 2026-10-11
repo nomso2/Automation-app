@@ -456,7 +456,7 @@ function showScript() {
   const cn = id => id ? (chars.find(c => c.id === id)?.name || '?') : 'Narrator';
   $('#ep-title').textContent = script.title;
   $('#script-view').innerHTML = `<p class="hint">Hook: ${esc(script.hook)}</p>` + script.scenes.map((sc, si) => `<div class="scene"><div class="loc">📍 ${esc(places.find(p => p.id === sc.placeId)?.name)}</div>${sc.lines.map((l, li) => `<p><span class="who">${esc(cn(l.charId))}</span>${l.emotion ? ` <i>(${esc(l.emotion)})</i>` : ''}: <span class="line-text" contenteditable="true" data-s="${si}" data-l="${li}">${esc(l.text)}</span></p>`).join('')}</div>`).join('') + '<p class="hint">Tip: tap any line to change the words before making the video.</p>';
-  $$('.line-text').forEach(el => el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); }); el.onblur = () => saveDraft().catch(() => {});
+  $$('.line-text').forEach(el => { el.oninput = () => { current.script.scenes[+el.dataset.s].lines[+el.dataset.l].text = el.textContent.trim(); }; el.onblur = () => saveDraft().catch(() => {}); });
   $('#script-card').classList.remove('hidden');
   $('#script-card').scrollIntoView({ behavior: 'smooth' });
 }

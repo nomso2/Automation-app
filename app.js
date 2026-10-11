@@ -162,6 +162,42 @@ function playBuffer(buf) { const a = audioCtx(), s = a.createBufferSource(); s.b
 
 function silentFor(lines) { const a = audioCtx(), d = Math.max(1.5, lines.reduce((x, l) => x + l.text.length, 0) / 14 + 0.4 * lines.length); return a.createBuffer(1, Math.ceil(d * a.sampleRate), a.sampleRate); }
 
+/* ---------- backup voices (when Gemini's free daily voice limit runs out) ---------- */
+const EDGE_F = ['en-US-AvaMultilingualNeural','en-US-EmmaMultilingualNeural','en-NG-EzinneNeural','en-GB-SoniaNeural','en-US-JennyNeural','en-US-AriaNeural'];
+const EDGE_M = ['en-US-AndrewMultilingualNeural','en-US-BrianMultilingualNeural','en-NG-AbeoNeural','en-GB-RyanNeural','en-US-GuyNeural','en-US-ChristopherNeural'];
+const KOKORO_F = ['af_heart','af_bella','af_nicole','bf_emma','af_sarah','bf_isabella'];
+const KOKORO_M = ['am_michael','am_fenrir','bm_george','am_adam','bm_lewis','am_puck'];
+function backupVoiceFor(gv, list) {
+  const i = VOICES.findIndex(v => v[0] === gv), female = i < 0 || /female/.test(VOICES[i][1]);
+  const pool = list === 'edge' ? (female ? EDGE_F : EDGE_M) : (female ? KOKORO_F : KOKORO_M);
+  const sameSex = VOICES.filter(v => /female/.test(v[1]) === female).findIndex(v => v[0] === gv);
+  return pool[Math.max(0, sameSex) % pool.length];
+}
+let kokoro;
+async function backupLine(text, gv) {
+  const a = audioCtx();
+  if (window.edgeTTS) { // cloud: Microsoft Edge voices
+    const b64 = await window.edgeTTS(text, backupVoiceFor(gv, 'edge'));
+    const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return await a.decodeAudioData(u.buffer);
+  }
+  if (!kokoro) {
+    progress(null, 'Loading free backup voice (one-time download, about 90 MB)…');
+    const { KokoroTTS } = await import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/+esm');
+    kokoro = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', { dtype: 'q8', device: 'wasm' });
+  }
+  const r = await kokoro.generate(text, { voice: backupVoiceFor(gv, 'kokoro') });
+  const buf = a.createBuffer(1, r.audio.length, r.sampling_rate); buf.getChannelData(0).set(r.audio); return buf;
+}
+async function backupChunk(lines, voiceOf) {
+  const a = audioCtx(), parts = [];
+  for (const l of lines) parts.push(await backupLine(l.text, voiceOf(l.charId)));
+  const rate = parts[0].sampleRate, gap = Math.round(0.25 * rate), len = parts.reduce((x, p) => x + p.length + gap, 0);
+  const out = a.createBuffer(1, len, rate), o = out.getChannelData(0); let at = 0;
+  for (const p of parts) { o.set(p.getChannelData(0), at); at += p.length + gap; }
+  return out;
+}
+
 /* ---------- images ---------- */
 function fileToDataURL(blob) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(blob); }); }
 function loadClip(blob) {
@@ -505,6 +541,7 @@ async function voiceEpisode() {
     const ids = ch.keys.map(k => k === 'N' ? null : k);
     let buf;
     if (current.noVoices) buf = silentFor(ch.lines);
+    else if (current.backupVoices) buf = await backupChunk(ch.lines, voiceOf);
     else try {
     if (ids.length === 1) {
       const l = ch.lines;
@@ -515,8 +552,14 @@ async function voiceEpisode() {
     }
     } catch (e) {
       if (!/Daily free limit/.test(e.message)) throw e;
-      if (!(await uiConfirm(e.message + '\n\nMake this video without voices (captions + music only)? You can remake it with voices later.'))) throw e;
-      current.noVoices = true; buf = silentFor(ch.lines);
+      try {
+        logErr('Gemini voices are used up for today, so switching to the free backup voices.');
+        current.backupVoices = true; buf = await backupChunk(ch.lines, voiceOf);
+      } catch (e2) {
+        current.backupVoices = false;
+        if (!(await uiConfirm(e.message + '\nBackup voice failed too (' + e2.message + ').\n\nMake this video without voices (captions + music only)?'))) throw e;
+        current.noVoices = true; buf = silentFor(ch.lines);
+      }
     }
     // spread caption timing across the lines by character count
     const total = ch.lines.reduce((a, l) => a + l.text.length + 12, 0);
@@ -707,7 +750,7 @@ let lastBlob = null, lastName = 'drama.mp4';
 $('#make-btn').onclick = () => makeVideo();
 async function makeVideo() {
   if (!current) return false;
-  current.noVoices = false;
+  current.noVoices = false; current.backupVoices = false;
   let ok = false;
   audioCtx(); // unlock audio on this tap (iOS)
   $('#progress-card').classList.remove('hidden'); $('#result-card').classList.add('hidden');

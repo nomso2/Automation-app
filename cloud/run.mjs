@@ -31,6 +31,12 @@ page.on('pageerror', e => say('page error: ' + e.message));
 await page.evaluateOnNewDocument(s => localStorage.setItem('sds_settings', JSON.stringify(s)), {
   key: process.env.GEMINI_KEY || 'mock', pkey: process.env.POLLINATIONS_KEY || '', imgsrc: process.env.POLLINATIONS_KEY ? 'pollinations' : 'horde'
 });
+await page.exposeFunction('edgeTTS', async (text, voice) => {
+  const { execFileSync } = await import('node:child_process');
+  const f = `/tmp/edge-${Date.now()}-${Math.random().toString(36).slice(2)}.mp3`;
+  execFileSync('edge-tts', ['--voice', voice, '--text', text, '--write-media', f], { timeout: 120000 });
+  const b = fs.readFileSync(f).toString('base64'); fs.unlinkSync(f); return b;
+});
 await page.goto('http://localhost:8765/index.html', { waitUntil: 'load' });
 await page.setViewport({ width: 420, height: 900 });
 

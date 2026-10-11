@@ -19,6 +19,7 @@ jobs:
         with: { node-version: 22 }
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - run: cd cloud && npm install --no-audit --no-fund
+      - run: pipx install edge-tts && edge-tts --version || true
       - name: Make the episodes
         env:
           GEMINI_KEY: ${{ secrets.GEMINI_KEY || secrets.GEMINIKEY }}

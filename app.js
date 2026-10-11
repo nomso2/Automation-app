@@ -255,11 +255,11 @@ function fillVoices() {
   $$('.voice-select').forEach(s => s.innerHTML = VOICES.map(([v, d]) => `<option value="${v}">${v} — ${d}</option>`).join(''));
 }
 function loadSettingsUI() {
-  $('#set-key').value = S.key; $('#set-pkey').value = S.pkey; $('#set-style').value = S.style;
+  $('#set-key').value = S.key; $('#set-pkey').value = S.pkey; $('#set-gtoken').value = S.gtoken || ''; $('#set-style').value = S.style;
   $('#set-imgsrc').value = S.imgsrc; $('#set-tmodel').value = S.tmodel; $('#set-vmodel').value = S.vmodel; $('#set-nvoice').value = S.nvoice;
 }
 $('#save-settings').onclick = () => {
-  Object.assign(S, { key: $('#set-key').value.trim(), pkey: $('#set-pkey').value.trim(), style: $('#set-style').value.trim() || DEFAULTS.style,
+  Object.assign(S, { key: $('#set-key').value.trim(), pkey: $('#set-pkey').value.trim(), gtoken: $('#set-gtoken').value.trim(), style: $('#set-style').value.trim() || DEFAULTS.style,
     imgsrc: $('#set-imgsrc').value, hordeChosen: $('#set-imgsrc').value === 'horde', tmodel: $('#set-tmodel').value.trim() || DEFAULTS.tmodel, vmodel: $('#set-vmodel').value.trim() || DEFAULTS.vmodel,
     nvoice: $('#set-nvoice').value });
   saveS(); toast('Settings saved');
@@ -778,7 +778,7 @@ $('#copy-caption-btn').onclick = async () => { await navigator.clipboard.writeTe
 
 /* ---------- episodes ---------- */
 async function renderEpisodes() {
-  renderCloud();
+  renderCloud(); cloudStatus();
   const eps = (await all('episodes')).sort((a, b) => b.createdAt - a.createdAt), ss = await all('series');
   $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}${e.video ? '' : ' · <b style="color:#fbbf24">script only</b>'}</small></div>
     ${e.script ? `<button class="ghost small" data-open="${e.id}">✏️</button>` : ''}<button class="ghost small" data-play="${e.id}">▶︎</button><button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
@@ -799,16 +799,41 @@ async function renderCloud() {
     const rel = (await r.json()).filter(x => !x.tag_name.startsWith('test-') && x.assets?.length);
     box.innerHTML = rel.map(x => { const a = x.assets.find(a => a.name.endsWith('.mp4')); return `<div class="ep"><div><b>${esc(x.name)}</b><br><small>${new Date(x.created_at).toLocaleString()}</small></div>
       <button class="ghost small" data-cplay="${esc(a.browser_download_url)}">▶︎</button><a class="ghost small" style="padding:8px 12px;border-radius:10px;text-decoration:none" href="${esc(a.browser_download_url)}" download>⬇️</a><button class="ghost small" data-ccap="${x.id}">📋</button></div>`; }).join('')
-      || '<p class="hint">None yet. The cloud makes new episodes every morning at 8:00.</p>';
+      || '<p class="hint">None yet. Tap Make in cloud now, or wait for the automatic run at 8:00 each morning.</p>';
     $$('[data-cplay]').forEach(b => b.onclick = () => { const v = $('#ep-player'); v.src = b.dataset.cplay; v.classList.remove('hidden'); v.scrollIntoView({ behavior: 'smooth' }); v.play().catch(() => {}); });
     $$('[data-ccap]').forEach(b => b.onclick = async () => { const x = rel.find(r => String(r.id) === b.dataset.ccap); await navigator.clipboard.writeText((x.body || '').split('\n').slice(2).join('\n').trim()); toast('Caption copied'); });
   } catch (e) { box.innerHTML = '<p class="hint">Could not load cloud episodes: ' + esc(e.message) + '</p>'; }
 }
 
+async function cloudStatus() {
+  const st = $('#cloud-status'); if (!st) return;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/make-episodes.yml/runs?per_page=1`, S.gtoken ? { headers: { Authorization: 'Bearer ' + S.gtoken } } : {});
+    const run = (await r.json()).workflow_runs?.[0]; if (!run) return;
+    const when = new Date(run.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (run.status !== 'completed') { st.textContent = `⏳ Making now (started ${when}). New episodes appear in this list when done.`; clearTimeout(cloudStatus.t); cloudStatus.t = setTimeout(() => { renderCloud(); cloudStatus(); }, 30000); }
+    else st.textContent = run.conclusion === 'success' ? `✅ Last cloud run finished (started ${when}).` : `❌ Last cloud run failed (started ${when}). Tell Hark to check it.`;
+  } catch {}
+}
+$('#cloud-go').onclick = async () => {
+  if (!S.gtoken) { $('[data-tab=settings]').click(); return uiAlert('Add a GitHub token in Settings first (instructions are under the box), then tap Save settings.'); }
+  const btn = $('#cloud-go'); btn.disabled = true;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/make-episodes.yml/dispatches`, { method: 'POST',
+      headers: { Authorization: 'Bearer ' + S.gtoken, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main', inputs: { episodes: $('#cloud-n').value, idea: $('#cloud-idea').value.trim() } }) });
+    if (r.status === 401) throw new Error('GitHub says the token is wrong or expired. Make a new one and save it in Settings.');
+    if (r.status === 403 || r.status === 404) throw new Error('The token needs access to Automation-app with Actions: Read and write.');
+    if (!r.ok) throw new Error('GitHub error ' + r.status + ': ' + (await r.text()).slice(0, 200));
+    toast('Started in the cloud'); $('#cloud-idea').value = '';
+    $('#cloud-status').textContent = '⏳ Starting… you can close the app.'; setTimeout(cloudStatus, 6000);
+  } catch (e) { uiAlert(e.message); } finally { btn.disabled = false; }
+};
+
 /* ---------- backup / restore (cast, places, series; not videos or your key) ---------- */
 $('#backup-btn').onclick = async () => {
   const data = { app: 'short-drama-studio', v: 1, at: new Date().toISOString(), series: await all('series'), chars: await all('chars'), places: await all('places'),
-    episodes: (await all('episodes')).map(({ video, ...rest }) => rest), settings: { ...S, key: '', pkey: '' } };
+    episodes: (await all('episodes')).map(({ video, ...rest }) => rest), settings: { ...S, key: '', pkey: '', gtoken: '' } };
   const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
   await shareBlob(blob, `drama-backup-${new Date().toISOString().slice(0, 10)}.json`, 'Short Drama Studio backup');
 };
@@ -817,7 +842,7 @@ $('#restore-file').onchange = async e => {
   try {
     const d = JSON.parse(await f.text()); if (d.app !== 'short-drama-studio') throw new Error('That is not a Short Drama Studio backup.');
     for (const st of ['series', 'chars', 'places', 'episodes']) for (const x of d[st] || []) if (!(await get(st, x.id))) await put(st, x);
-    if (d.settings) { const keep = { key: S.key, pkey: S.pkey }; Object.assign(S, d.settings, keep); if (!S.key && d.settings.key) S.key = d.settings.key; saveS(); loadSettingsUI(); }
+    if (d.settings) { const keep = { key: S.key, pkey: S.pkey, gtoken: S.gtoken }; Object.assign(S, d.settings, keep); if (!S.key && d.settings.key) S.key = d.settings.key; saveS(); loadSettingsUI(); }
     renderSeries(); toast('Backup restored'); uiAlert(`Restored ${(d.series || []).length} series, ${(d.chars || []).length} characters, ${(d.places || []).length} places.`);
   } catch (err) { uiAlert('Restore failed: ' + err.message); }
   e.target.value = '';

@@ -14,7 +14,7 @@
 </head>
 <body>
 <header>
-  <h1>🎬 Short Drama Studio <small style="font-size:12px;opacity:.5">v15</small></h1>
+  <h1>🎬 Short Drama Studio <small style="font-size:12px;opacity:.5">v16</small></h1>
   <nav>
     <button data-tab="create" class="active">Create</button>
     <button data-tab="cast">Cast</button>
@@ -108,6 +108,12 @@
   <div class="card">
     <h2>Episodes</h2>
     <h3 style="margin:18px 0 6px">☁️ Made in the cloud</h3>
+    <div class="row">
+      <select id="cloud-n"><option value="1">1 episode</option><option value="2">2 episodes</option><option value="3">3 episodes</option><option value="5">5 episodes</option></select>
+      <button class="primary" id="cloud-go">☁️ Make in cloud now</button>
+    </div>
+    <input id="cloud-idea" placeholder="Idea for the episode (optional)">
+    <p class="hint" id="cloud-status">Runs on GitHub, so you can close the app. Takes about 5–15 minutes per episode.</p>
     <div id="cloud-list"></div>
     <h3 style="margin:18px 0 6px">📱 Made on this phone</h3>
     <div id="episode-list"></div>
@@ -131,6 +137,9 @@
     </select>
     <label>Pollinations key (optional)</label>
     <input id="set-pkey" type="password" placeholder="pk_...">
+    <label>GitHub token (for "Make in cloud now")</label>
+    <input id="set-gtoken" type="password" placeholder="github_pat_...">
+    <p class="hint">Make one at github.com/settings/personal-access-tokens/new: pick Only select repositories → Automation-app, then Repository permissions → Actions → Read and write.</p>
     <label>Script model</label>
     <input id="set-tmodel">
     <label>Voice model</label>

@@ -112,7 +112,7 @@ async function geminiOnce(model, body, label) {
     if (r.status === 429 || r.status >= 500) {
       let wait = 20;
       const m = txt.match(/"retryDelay":\s*"(\d+)/); if (m) wait = +m[1] + 2;
-      if (/per day|PerDay/i.test(txt) && attempt >= 1) throw new Error('Daily free limit reached for ' + label + '. Try again tomorrow (or add billing to your Gemini key).');
+      if (wait > 90 || (/per day|PerDay/i.test(txt) && attempt >= 1)) throw new Error('Daily free limit reached for ' + label + (wait > 90 ? ' (Google says wait about ' + Math.round(wait / 3600) + ' h)' : '') + '. Try again later (or add billing to your Gemini key).');
       progress(null, `Busy (${label}). Waiting ${wait}s…`);
       await sleep(wait * 1000); continue;
     }
@@ -159,6 +159,8 @@ async function tts(text, speakers /* [{label, voice}] */) {
   return pcmToBuffer(part.inlineData.data, rate);
 }
 function playBuffer(buf) { const a = audioCtx(), s = a.createBufferSource(); s.buffer = buf; s.connect(a.destination); s.start(); }
+
+function silentFor(lines) { const a = audioCtx(), d = Math.max(1.5, lines.reduce((x, l) => x + l.text.length, 0) / 14 + 0.4 * lines.length); return a.createBuffer(1, Math.ceil(d * a.sampleRate), a.sampleRate); }
 
 /* ---------- images ---------- */
 function fileToDataURL(blob) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(blob); }); }
@@ -502,12 +504,19 @@ async function voiceEpisode() {
     progress(0.05 + 0.55 * i / chunks.length, `Recording voices ${i + 1}/${chunks.length}…`);
     const ids = ch.keys.map(k => k === 'N' ? null : k);
     let buf;
+    if (current.noVoices) buf = silentFor(ch.lines);
+    else try {
     if (ids.length === 1) {
       const l = ch.lines;
       buf = await tts(`Read this as a dramatic short-film performance${l[0].emotion ? ', ' + l[0].emotion : ''}, with natural pauses between sentences:\n` + l.map(x => x.text).join('\n'), [{ label: 'A', voice: voiceOf(ids[0]) }]);
     } else {
       const text = 'TTS the following dramatic conversation with real emotion:\n' + ch.lines.map(l => `${labelOf(l.charId)}: ${l.emotion ? '(' + l.emotion + ') ' : ''}${l.text}`).join('\n');
       buf = await tts(text, ids.map(id => ({ label: labelOf(id), voice: voiceOf(id) })));
+    }
+    } catch (e) {
+      if (!/Daily free limit/.test(e.message)) throw e;
+      if (!(await uiConfirm(e.message + '\n\nMake this video without voices (captions + music only)? You can remake it with voices later.'))) throw e;
+      current.noVoices = true; buf = silentFor(ch.lines);
     }
     // spread caption timing across the lines by character count
     const total = ch.lines.reduce((a, l) => a + l.text.length + 12, 0);
@@ -698,6 +707,7 @@ let lastBlob = null, lastName = 'drama.mp4';
 $('#make-btn').onclick = () => makeVideo();
 async function makeVideo() {
   if (!current) return false;
+  current.noVoices = false;
   let ok = false;
   audioCtx(); // unlock audio on this tap (iOS)
   $('#progress-card').classList.remove('hidden'); $('#result-card').classList.add('hidden');

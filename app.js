@@ -757,6 +757,7 @@ $('#copy-caption-btn').onclick = async () => { await navigator.clipboard.writeTe
 
 /* ---------- episodes ---------- */
 async function renderEpisodes() {
+  renderCloud();
   const eps = (await all('episodes')).sort((a, b) => b.createdAt - a.createdAt), ss = await all('series');
   $('#episode-list').innerHTML = eps.map(e => `<div class="ep"><div><b>${esc(e.title)}</b><br><small>${esc(ss.find(s => s.id === e.seriesId)?.name || '')} · Ep ${e.number} · ${new Date(e.createdAt).toLocaleDateString()}${e.video ? '' : ' · <b style="color:#fbbf24">script only</b>'}</small></div>
     ${e.script ? `<button class="ghost small" data-open="${e.id}">✏️</button>` : ''}<button class="ghost small" data-play="${e.id}">▶︎</button><button class="ghost small" data-share="${e.id}">⬇️</button><button class="ghost small" data-cap="${e.id}">📋</button><button class="danger small" data-del="${e.id}">✕</button></div>`).join('') || '<p class="hint">No episodes yet.</p>';
@@ -765,6 +766,22 @@ async function renderEpisodes() {
   $$('[data-share]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.share); e.video ? shareBlob(e.video, e.name, e.title) : uiAlert('Video not stored.'); });
   $$('[data-cap]').forEach(b => b.onclick = async () => { const e = await get('episodes', b.dataset.cap); await navigator.clipboard.writeText(e.caption); toast('Caption copied'); });
   $$('[data-del]').forEach(b => b.onclick = async () => { if (await uiConfirm('Delete this episode video?')) { await del('episodes', b.dataset.del); renderEpisodes(); } });
+}
+
+/* ---------- episodes made in the cloud (GitHub Actions → Releases) ---------- */
+const REPO = 'nomso2/Automation-app';
+async function renderCloud() {
+  const box = $('#cloud-list'); if (!box) return;
+  box.innerHTML = '<p class="hint">Loading…</p>';
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=30`);
+    const rel = (await r.json()).filter(x => !x.tag_name.startsWith('test-') && x.assets?.length);
+    box.innerHTML = rel.map(x => { const a = x.assets.find(a => a.name.endsWith('.mp4')); return `<div class="ep"><div><b>${esc(x.name)}</b><br><small>${new Date(x.created_at).toLocaleString()}</small></div>
+      <button class="ghost small" data-cplay="${esc(a.browser_download_url)}">▶︎</button><a class="ghost small" style="padding:8px 12px;border-radius:10px;text-decoration:none" href="${esc(a.browser_download_url)}" download>⬇️</a><button class="ghost small" data-ccap="${x.id}">📋</button></div>`; }).join('')
+      || '<p class="hint">None yet. The cloud makes new episodes every morning at 8:00.</p>';
+    $$('[data-cplay]').forEach(b => b.onclick = () => { const v = $('#ep-player'); v.src = b.dataset.cplay; v.classList.remove('hidden'); v.scrollIntoView({ behavior: 'smooth' }); v.play().catch(() => {}); });
+    $$('[data-ccap]').forEach(b => b.onclick = async () => { const x = rel.find(r => String(r.id) === b.dataset.ccap); await navigator.clipboard.writeText((x.body || '').split('\n').slice(2).join('\n').trim()); toast('Caption copied'); });
+  } catch (e) { box.innerHTML = '<p class="hint">Could not load cloud episodes: ' + esc(e.message) + '</p>'; }
 }
 
 /* ---------- backup / restore (cast, places, series; not videos or your key) ---------- */

@@ -1,75 +1,58 @@
-11:17:39 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-11:17:39 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-11:17:39 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-11:17:39 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-11:17:39 Making 2 episode(s)
-11:17:39 Episode 1: writing script
-11:18:06 page: Script try 1: 5 scenes, 174 words (want 138)
-11:18:06 page: SCRIPT: 5 scenes, 19 lines, 174 words; actions: Julian violently shoves Sebastian against the marble bar, rattling crystal decanters. | Victoria furiously slaps a crystal tumbler off the counter, sending shards flying across the floor. | Sebastian violently shoves Julian away and starts running at f
-11:18:38 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:38 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:38 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:38 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:49 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:49 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:49 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:49 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:54 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:54 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:54 page: Failed to load resource: the server responded with a status of 400 ()
-11:18:54 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:18:59 page: Failed to load resource: the server responded with a status of 429 ()
-11:19:02 page: Failed to load resource: the server responded with a status of 429 ()
-11:20:01 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:01 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:05 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:05 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:05 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:05 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:10 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:10 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:10 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:10 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:15 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:15 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:15 page: Failed to load resource: the server responded with a status of 400 ()
-11:20:15 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:20:21 page: Failed to load resource: the server responded with a status of 429 ()
-11:21:01 page: Failed to load resource: the server responded with a status of 400 ()
-11:21:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:21:01 page: Failed to load resource: the server responded with a status of 400 ()
-11:21:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:22:40 page: SHOTS: 1:shot 2:move-fly 3:move-run 4:shot 5:move-run
-11:22:40 Joining 3411 frames (113.7 s)
-11:23:07 LENGTH: 113.673991 s
-11:23:07 Episode 16 done: Tempting the Ruthless CEO - Episode 16
-11:23:07 Episode 2: writing script
-11:23:34 page: Script try 1: 4 scenes, 199 words (want 138)
-11:23:34 page: SCRIPT: 4 scenes, 18 lines, 199 words; actions: Aria Bennett bursts through the double doors, sprinting across the polished marble floor and slapping a glowing detonator out of Sebastian Vance's hand. | Julian Thorne charges across the ballroom and tackles Sebastian Vance hard against a gilded banqu
-11:23:56 page: Failed to load resource: the server responded with a status of 400 ()
-11:23:56 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:23:56 page: Failed to load resource: the server responded with a status of 400 ()
-11:23:56 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:24:06 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:06 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:06 page: Failed to load resource: the server responded with a status of 400 ()
-11:24:06 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-11:24:15 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:15 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:15 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:15 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:16 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:16 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:26 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:26 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:26 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:26 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:24:26 page: Failed to load resource: the server responded with a status of 429 ()
-11:24:26 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 13 h). Try again later (or add billing to your Gemini key). — trying next model
-11:25:43 page: SHOTS: 1:move-run 2:shot 3:shot 4:shot
-11:25:43 Joining 2872 frames (95.7 s)
-11:26:04 LENGTH: 95.701995 s
-11:26:04 Episode 17 done: The Price of Protection
-11:26:04 Finished: 2 episode(s)
+11:53:45 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+11:53:45 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+11:53:45 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+11:53:45 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+11:53:45 Making 2 episode(s)
+11:53:45 Episode 1: writing script
+11:54:51 page: Script try 1: 4 scenes, 207 words (want 138)
+11:54:51 page: SCRIPT: 4 scenes, 16 lines, 207 words; actions: Aria violently shoves Julian's chest and hurls her father's gold signet ring straight into the floor-to-ceiling glass window. | Victoria slams open the penthouse double doors and smashes a vibrating tablet onto the marble island. | Sebastian steps out 
+11:55:09 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:09 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:09 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:09 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:17 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:17 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:17 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:17 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:29 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:29 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:30 page: Failed to load resource: the server responded with a status of 400 ()
+11:55:30 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:55:38 page: Failed to load resource: the server responded with a status of 429 ()
+11:56:01 page: Failed to load resource: the server responded with a status of 429 ()
+11:57:06 page: Failed to load resource: the server responded with a status of 400 ()
+11:57:06 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:57:06 page: Failed to load resource: the server responded with a status of 400 ()
+11:57:06 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+11:58:42 page: SHOTS: 1:shot 2:shot 3:move-run 4:move-walk
+11:58:42 Joining 3777 frames (125.9 s)
+11:59:06 LENGTH: 125.871995 s
+11:59:06 Episode 18 done: Tempting the Ruthless CEO - Episode 18
+11:59:06 Episode 2: writing script
+11:59:51 page: Script try 1: 5 scenes, 201 words (want 138)
+11:59:51 page: SCRIPT: 5 scenes, 18 lines, 201 words; actions: Sebastian twists Aria's arm behind her back, flicking a gold lighter directly above the Bennett family ledger while she struggles violently. | Julian kicks open the mangled vault door and lunges across the room, slamming Sebastian against the steel fil
+12:00:24 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:24 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:25 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:25 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:32 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:32 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:32 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:32 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:40 page: Failed to load resource: the server responded with a status of 429 ()
+12:00:40 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 12 h). Try again later (or add billing to your Gemini key). — trying next model
+12:00:41 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:41 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:48 page: Failed to load resource: the server responded with a status of 429 ()
+12:00:48 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 12 h). Try again later (or add billing to your Gemini key). — trying next model
+12:00:48 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:48 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:55 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:55 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:00:55 page: Failed to load resource: the server responded with a status of 400 ()
+12:00:55 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:02:03 page: SHOTS: 1:shot 2:shot 3:move-run 4:shot 5:shot
+12:02:03 Joining 3129 frames (104.3 s)
+12:02:21 LENGTH: 104.270000 s
+12:02:21 Episode 19 done: The Execution Order
+12:02:21 Finished: 2 episode(s)

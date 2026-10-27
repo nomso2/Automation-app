@@ -1,89 +1,97 @@
-13:46:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-13:46:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-13:46:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-13:46:26 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-13:46:26 Making 2 episode(s)
-13:46:26 Episode 1: writing script
-13:46:29 page: Failed to load resource: the server responded with a status of 503 ()
-13:52:01 page: Script try 1: 5 scenes, 204 words (want 138)
-13:52:01 page: SCRIPT: 5 scenes, 20 lines, 204 words; actions: Julian grabs Aria's trembling shoulders as she violently slaps his cheek, sending a stack of legal dossiers crashing to the floor. | Julian wrenches his bloody platinum signet ring off his finger and hurls it against the steel vault door, popping open 
-13:52:02 page: Failed to load resource: the server responded with a status of 402 ()
-13:52:02 page: Scene 1: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-13:52:03 page: Failed to load resource: the server responded with a status of 402 ()
-13:52:03 page: Scene 2: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-13:52:04 page: Failed to load resource: the server responded with a status of 402 ()
-13:52:04 page: Scene 3: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-13:52:05 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:05 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:05 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:05 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:13 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:13 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:14 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:14 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:22 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:22 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:22 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:22 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:30 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:30 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:30 page: Failed to load resource: the server responded with a status of 400 ()
-13:52:30 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:52:36 page: Failed to load resource: the server responded with a status of 429 ()
-13:53:01 page: Failed to load resource: the server responded with a status of 429 ()
-13:54:01 page: Failed to load resource: the server responded with a status of 400 ()
-13:54:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:54:01 page: Failed to load resource: the server responded with a status of 400 ()
-13:54:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-13:55:38 page: SHOTS: 1:none 2:none 3:none 4:move-run 5:move-walk
-13:55:38 Joining 3269 frames (109.0 s)
-13:55:57 LENGTH: 108.950000 s
-13:55:57 Episode 32 done: Tempting the Ruthless CEO - Episode 32: The Blood Oath
-13:55:57 Episode 2: writing script
-14:02:03 page: Script try 1: 5 scenes, 241 words (want 138)
-14:02:03 page: SCRIPT: 5 scenes, 21 lines, 241 words; actions: Aria sprints down the narrow iron corridor hauling a staggering Julian while Sebastian chases after them, violently hurling a brass candlestick that shatters against the heavy vault door. | Aria kicks the penthouse double doors shut and slams the deadb
-14:02:04 page: Failed to load resource: the server responded with a status of 402 ()
-14:02:04 page: Scene 2: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-14:02:06 page: Failed to load resource: the server responded with a status of 402 ()
-14:02:06 page: Scene 3: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-14:02:07 page: Failed to load resource: the server responded with a status of 402 ()
-14:02:07 page: Scene 5: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
-14:02:07 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:07 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:07 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:07 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:13 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:13 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:13 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:13 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:19 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:19 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:19 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:19 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:28 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:28 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:28 page: Failed to load resource: the server responded with a status of 400 ()
-14:02:28 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:02:36 page: Failed to load resource: the server responded with a status of 429 ()
-14:03:01 page: Failed to load resource: the server responded with a status of 429 ()
-14:04:01 page: Failed to load resource: the server responded with a status of 400 ()
-14:04:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:04:02 page: Failed to load resource: the server responded with a status of 400 ()
-14:04:02 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:04:14 page: Failed to load resource: the server responded with a status of 429 ()
-14:04:14 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 17 h). Try again later (or add billing to your Gemini key). — trying next model
-14:04:14 page: Failed to load resource: the server responded with a status of 400 ()
-14:04:14 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:04:14 page: Failed to load resource: the server responded with a status of 429 ()
-14:04:14 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 17 h). Try again later (or add billing to your Gemini key). — trying next model
-14:04:24 page: Failed to load resource: the server responded with a status of 400 ()
-14:04:24 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:04:24 page: Failed to load resource: the server responded with a status of 400 ()
-14:04:24 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
-14:04:25 page: Failed to load resource: the server responded with a status of 429 ()
-14:04:25 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 17 h). Try again later (or add billing to your Gemini key). — trying next model
-14:06:17 page: SHOTS: 1:move-run 2:none 3:none 4:move-walk 5:none
-14:06:17 Joining 4087 frames (136.2 s)
-14:06:42 LENGTH: 136.229002 s
-14:06:42 Episode 33 done: Bleeding Devotion
-14:06:42 Finished: 2 episode(s)
+12:53:25 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+12:53:25 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+12:53:25 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+12:53:25 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+12:53:25 Making 2 episode(s)
+12:53:25 Episode 1: writing script
+12:59:09 page: Script try 1: 5 scenes, 162 words (want 138)
+12:59:09 page: SCRIPT: 5 scenes, 17 lines, 162 words; actions: Aria steps courageously in front of the bleeding Julian, thrusting her glowing phone display into Sebastian's leveled gun barrel. | Victoria lunges forward with clawed nails, but Aria violently sidesteps and shoves Victoria crashing into a glass coffee
+12:59:15 page: Failed to load resource: the server responded with a status of 402 ()
+12:59:15 page: Scene 1: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
+12:59:23 page: Failed to load resource: the server responded with a status of 402 ()
+12:59:23 page: Scene 2: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
+12:59:27 page: Failed to load resource: the server responded with a status of 402 ()
+12:59:27 page: Scene 3: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
+12:59:32 page: Failed to load resource: the server responded with a status of 402 ()
+12:59:32 page: Scene 5: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs ~0.0020 pollen, but your available balance is 0.0000. Top up at https://enter.poll
+12:59:32 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:32 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:32 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:32 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:38 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:38 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:38 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:38 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:43 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:43 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:44 page: Failed to load resource: the server responded with a status of 400 ()
+12:59:44 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+12:59:54 page: Failed to load resource: the server responded with a status of 429 ()
+13:00:02 page: Failed to load resource: the server responded with a status of 400 ()
+13:00:02 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:00:02 page: Failed to load resource: the server responded with a status of 400 ()
+13:00:02 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:00:08 page: Failed to load resource: the server responded with a status of 429 ()
+13:01:01 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:01:01 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:01:11 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:11 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:01:11 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:11 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:01:16 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:16 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:01:16 page: Failed to load resource: the server responded with a status of 400 ()
+13:01:16 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:03:02 page: SHOTS: 1:none 2:none 3:none 4:move-run 5:none
+13:03:02 Joining 3249 frames (108.3 s)
+13:03:26 LENGTH: 108.285011 s
+13:03:26 Episode 34 done: Tempting the Ruthless CEO - Episode 34: Line of Fire
+13:03:26 Episode 2: writing script
+13:03:27 page: Failed to load resource: the server responded with a status of 503 ()
+13:07:57 page: Script try 1: 5 scenes, 179 words (want 138)
+13:07:57 page: SCRIPT: 5 scenes, 18 lines, 179 words; actions: Julian hurls a heavy crystal decanter across the shattered marble floor, deflecting Sebastian's gun as glass explodes between them. | Victoria dives onto the marble to grab the skittering firearm, but Aria lunges forward and violently kicks the weapon 
+13:08:03 page: Failed to load resource: the server responded with a status of 503 ()
+13:08:03 page: Scene 1: Pollinations error 503: {"success":false,"error":{"message":"Unable to verify balance. Please try again shortly.","code":"SERVICE_UNAVAILABLE","timestamp":"2026-10-27T13:08:03.476Z"},"
+13:08:03 page: Failed to load resource: the server responded with a status of 401 ()
+13:08:03 page: Scene 2: Pollinations error 401: {"success":false,"error":{"message":"A valid API key is required. Get one at https://enter.pollinations.ai/keys, or buy one with USDC (x402) at https://enter.po
+13:08:04 page: Failed to load resource: the server responded with a status of 401 ()
+13:08:04 page: Scene 5: Pollinations error 401: {"success":false,"error":{"message":"A valid API key is required. Get one at https://enter.pollinations.ai/keys, or buy one with USDC (x402) at https://enter.po
+13:08:04 page: Failed to load resource: the server responded with a status of 400 ()
+13:08:04 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:08:04 page: Failed to load resource: the server responded with a status of 400 ()
+13:08:04 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:08:23 page: Failed to load resource: the server responded with a status of 400 ()
+13:08:23 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:08:23 page: Failed to load resource: the server responded with a status of 400 ()
+13:08:23 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:08:45 page: Failed to load resource: the server responded with a status of 429 ()
+13:08:45 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:08:45 page: Failed to load resource: the server responded with a status of 400 ()
+13:08:45 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:09:07 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:07 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:09:08 page: Failed to load resource: the server responded with a status of 400 ()
+13:09:08 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+13:09:31 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:31 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:09:32 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:32 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:09:32 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:32 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:09:39 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:39 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:09:39 page: Failed to load resource: the server responded with a status of 429 ()
+13:09:39 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:10:01 page: Failed to load resource: the server responded with a status of 429 ()
+13:10:01 page: gemini-3.8-flash-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:10:02 page: Failed to load resource: the server responded with a status of 429 ()
+13:10:02 page: gemini-3.8-flash-lite-tts: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:10:02 page: Failed to load resource: the server responded with a status of 429 ()
+13:10:02 page: gemini-3.1-flash-tts-preview: Daily free limit reached for voices (Google says wait about 18 h). Try again later (or add billing to your Gemini key). — trying next model
+13:11:45 page: SHOTS: 1:none 2:none 3:move-run 4:move-run 5:none
+13:11:45 Joining 2941 frames (98.0 s)
+13:12:08 LENGTH: 98.031995 s
+13:12:08 Episode 35 done: Tempting the Ruthless CEO - Episode 35: The Final Strike
+13:12:08 Finished: 2 episode(s)

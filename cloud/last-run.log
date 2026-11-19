@@ -1,17 +1,51 @@
-16:22:04 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-16:22:04 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-16:22:04 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-16:22:04 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-16:22:04 Making 2 episode(s)
-16:22:04 Episode 1: writing script
-16:37:04 CRASH: ProtocolError: Runtime.callFunctionOn timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.
-    at <instance_members_initializer> (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:97:14)
-    at new Callback (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:101:16)
-    at CallbackRegistry.create (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:20:26)
-    at Connection._rawSend (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:89:26)
-    at CdpCDPSession.send (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/CDPSession.js:65:33)
-    at #evaluate (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/ExecutionContext.js:360:50)
-    at ExecutionContext.evaluate (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/ExecutionContext.js:275:36)
-    at IsolatedWorld.evaluate (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/IsolatedWorld.js:97:30)
-    at CdpFrame.evaluate (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/api/Frame.js:345:43)
-    at CdpFrame.<anonymous> (file:///home/runner/work/Automation-app/Automation-app/cloud/node_modules/puppeteer-core/lib/esm/puppeteer/util/decorators.js:101:27)
+16:17:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+16:17:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+16:17:26 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+16:17:26 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+16:17:26 Making 2 episode(s)
+16:17:26 Episode 1: writing script
+16:17:28 page: Failed to load resource: the server responded with a status of 503 ()
+16:28:35 page: Script try 1: 5 scenes, 199 words (want 138)
+16:28:35 page: SCRIPT: 5 scenes, 17 lines, 199 words; actions: Sebastian cocks his pistol at Julian's chest, but Aria lunges forward and forcefully deflects Sebastian's arm as a gunshot deafeningly shatters the ceiling chandelier. | Victoria raises her snub-nosed revolver toward Julian, but Aria hurls a heavy crys
+16:28:36 page: Failed to load resource: the server responded with a status of 402 ()
+16:28:36 page: Scene 1: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs about $0.0020, but your available balance is $0.0000. Top up at https://enter.poll
+16:28:37 page: Failed to load resource: the server responded with a status of 402 ()
+16:28:37 page: Scene 2: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs about $0.0020, but your available balance is $0.0000. Top up at https://enter.poll
+16:28:38 page: Failed to load resource: the server responded with a status of 402 ()
+16:28:38 page: Scene 4: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs about $0.0020, but your available balance is $0.0000. Top up at https://enter.poll
+16:28:39 page: Failed to load resource: the server responded with a status of 402 ()
+16:28:39 page: Scene 5: Pollinations error 402: {"success":false,"error":{"message":"Insufficient balance. This request costs about $0.0020, but your available balance is $0.0000. Top up at https://enter.poll
+16:28:39 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:39 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:28:39 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:39 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:28:46 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:46 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:28:46 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:46 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:28:52 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:52 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:28:52 page: Failed to load resource: the server responded with a status of 400 ()
+16:28:52 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:29:04 page: Failed to load resource: the server responded with a status of 429 ()
+16:30:01 page: Failed to load resource: the server responded with a status of 400 ()
+16:30:01 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:30:01 page: Failed to load resource: the server responded with a status of 400 ()
+16:30:01 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:30:10 page: Failed to load resource: the server responded with a status of 400 ()
+16:30:10 page: gemini-3.8-flash-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:30:10 page: Failed to load resource: the server responded with a status of 400 ()
+16:30:10 page: gemini-3.8-flash-lite-tts: Gemini 400: Multi-speaker generation requests must specify speech_metadata.speaker for each text part in the contents. — trying next model
+16:31:52 page: SHOTS: 1:none 2:none 3:move-fly 4:none 5:none
+16:31:52 Joining 3625 frames (120.8 s)
+16:32:09 LENGTH: 120.810998 s
+16:32:09 Episode 52 done: Tempting the Ruthless CEO - Episode 52: Smoke and Sacrifice
+16:32:09 Episode 2: writing script
+16:32:10 page: Failed to load resource: the server responded with a status of 503 ()
+16:32:31 page: Failed to load resource: the server responded with a status of 503 ()
+16:32:52 page: Failed to load resource: the server responded with a status of 503 ()
+16:33:49 page: Failed to load resource: the server responded with a status of 503 ()
+16:34:12 page: Failed to load resource: the server responded with a status of 503 ()
+16:34:33 page: Failed to load resource: the server responded with a status of 503 ()
+16:34:53 FAILED: Gemini kept saying busy. Try again in a few minutes.
+16:34:53 Finished: 1 episode(s)

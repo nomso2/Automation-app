@@ -1,14 +1,14 @@
-18:53:27 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-18:53:27 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
-18:53:27 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
-18:53:27 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
-18:53:27 Making 2 episode(s)
-18:53:27 Episode 1: writing script
-18:53:31 page: Failed to load resource: the server responded with a status of 503 ()
-18:53:52 page: Failed to load resource: the server responded with a status of 503 ()
-18:54:13 page: Failed to load resource: the server responded with a status of 503 ()
-18:54:36 page: Failed to load resource: the server responded with a status of 503 ()
-18:54:58 page: Failed to load resource: the server responded with a status of 503 ()
-18:55:19 page: Failed to load resource: the server responded with a status of 503 ()
-18:55:39 FAILED: Gemini kept saying busy. Try again in a few minutes.
-18:55:39 Finished: 0 episode(s)
+18:29:58 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+18:29:58 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)
+18:29:58 page: [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o
+18:29:58 page: <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+18:29:58 Making 2 episode(s)
+18:29:58 Episode 1: writing script
+18:29:59 page: Failed to load resource: the server responded with a status of 503 ()
+18:30:19 page: Failed to load resource: the server responded with a status of 503 ()
+18:30:39 page: Failed to load resource: the server responded with a status of 503 ()
+18:31:03 page: Failed to load resource: the server responded with a status of 503 ()
+18:31:24 page: Failed to load resource: the server responded with a status of 503 ()
+18:31:45 page: Failed to load resource: the server responded with a status of 503 ()
+18:32:05 FAILED: Gemini kept saying busy. Try again in a few minutes.
+18:32:05 Finished: 0 episode(s)
